@@ -11,11 +11,10 @@ namespace inventory_management_system.Models
 
         [Required]
         [StringLength(50)]
-        [Index("IX_OrderStatuses_Name", IsUnique = true)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         // Navigation property
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Order>? Orders { get; set; }
     }
 
 }

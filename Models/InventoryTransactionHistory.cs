@@ -40,7 +40,7 @@ namespace inventory_management_system.Models
         public virtual PurchaseOrder PurchaseOrder { get; set; }
 
         [StringLength(255)]
-        public string Details { get; set; }
+        public string? Details { get; set; }
 
         [Required]
         public DateTime TransactionDate { get; set; } = DateTime.Now;
@@ -49,16 +49,9 @@ namespace inventory_management_system.Models
         public int UserId { get; set; }
 
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
 
-        [Index("IX_InventoryTransactionHistory_ProductWarehouse", Order = 1)]
-        public int IndexedProductId => ProductId;
-
-        [Index("IX_InventoryTransactionHistory_ProductWarehouse", Order = 2)]
-        public int IndexedWarehouseId => WarehouseId;
-
-        [Index("IX_InventoryTransactionHistory_Date")]
-        public DateTime IndexedTransactionDate => TransactionDate;
+        
     }
 
 }

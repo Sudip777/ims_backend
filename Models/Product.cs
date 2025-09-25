@@ -15,7 +15,6 @@ namespace inventory_management_system.Models
 
         [Required]
         [StringLength(100)]
-        [Index("IX_Products_SKU", IsUnique = true)]
         public string SKU { get; set; }
 
         [Required]
@@ -52,13 +51,12 @@ namespace inventory_management_system.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Navigation properties
-        public virtual ICollection<ProductSupplier> ProductSuppliers { get; set; }
-        public virtual ICollection<Inventory> Inventories { get; set; }
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual ICollection<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
-        public virtual ICollection<InventoryTransactionHistory> Transactions { get; set; }
+        public virtual ICollection<ProductSupplier>? ProductSuppliers { get; set; }
+        public virtual ICollection<Inventory>? Inventories { get; set; }
+        public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
+        public virtual ICollection<PurchaseOrderDetail>? PurchaseOrderDetails { get; set; }
+        public virtual ICollection<InventoryTransactionHistory>? Transactions { get; set; }
 
-        [Index("IX_Products_Category")]
-        public int? IndexedCategoryId => CategoryId;
+      
     }
 }

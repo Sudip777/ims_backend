@@ -13,13 +13,13 @@ namespace inventory_management_system.Models
         public int OrderId { get; set; }
 
         [ForeignKey("OrderId")]
-        public virtual Order Order { get; set; }
+        public virtual Order? Order { get; set; }
 
         [Required]
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]
-        public virtual Product Product { get; set; }
+        public virtual Product? Product { get; set; }
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be positive")]

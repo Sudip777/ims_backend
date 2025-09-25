@@ -13,13 +13,13 @@ namespace inventory_management_system.Models
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]
-        public virtual Product Product { get; set; }
+        public virtual Product? Product { get; set; }
 
         [Required]
         public int WarehouseId { get; set; }
 
         [ForeignKey("WarehouseId")]
-        public virtual Warehouse Warehouse { get; set; }
+        public virtual Warehouse? Warehouse { get; set; }
 
         [Required]
         [Range(0, int.MaxValue, ErrorMessage = "Quantity cannot be negative")]

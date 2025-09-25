@@ -11,16 +11,16 @@ namespace inventory_management_system.Models
 
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required]
         public int CreatedByUserId { get; set; }
 
         [ForeignKey("CreatedByUserId")]
-        public virtual User CreatedByUser { get; set; }
+        public required virtual User CreatedByUser { get; set; }
 
         // Navigation properties
-        public virtual ICollection<Inventory> Inventories { get; set; }
-        public virtual ICollection<InventoryTransactionHistory> Transactions { get; set; }
+        public required virtual ICollection<Inventory> Inventories { get; set; }
+        public required virtual ICollection<InventoryTransactionHistory> Transactions { get; set; }
     }
 }

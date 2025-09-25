@@ -13,7 +13,7 @@ namespace inventory_management_system.Models
         public int CustomerId { get; set; }
 
         [ForeignKey("CustomerId")]
-        public virtual Customer Customer { get; set; }
+        public virtual Customer? Customer { get; set; }
 
         [Required]
         public DateTime OrderDate { get; set; } = DateTime.Now;
@@ -22,7 +22,7 @@ namespace inventory_management_system.Models
         public int StatusId { get; set; } = 1; // Default: Pending
 
         [ForeignKey("StatusId")]
-        public virtual OrderStatus Status { get; set; }
+        public virtual OrderStatus? Status { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
@@ -32,11 +32,11 @@ namespace inventory_management_system.Models
         public int CreatedByUserId { get; set; }
 
         [ForeignKey("CreatedByUserId")]
-        public virtual User CreatedByUser { get; set; }
+        public virtual User? CreatedByUser { get; set; }
 
         // Navigation properties
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual ICollection<InventoryTransactionHistory> Transactions { get; set; }
+        public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
+        public virtual ICollection<InventoryTransactionHistory>? Transactions { get; set; }
     }
 
 }

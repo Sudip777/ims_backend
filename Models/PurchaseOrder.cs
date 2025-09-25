@@ -13,7 +13,7 @@ namespace inventory_management_system.Models
         public int SupplierId { get; set; }
 
         [ForeignKey("SupplierId")]
-        public virtual Supplier Supplier { get; set; }
+        public virtual Supplier? Supplier { get; set; }
 
         [Required]
         public DateTime OrderDate { get; set; } = DateTime.Now;
@@ -22,7 +22,7 @@ namespace inventory_management_system.Models
         public int StatusId { get; set; } = 1; // Default: Pending
 
         [ForeignKey("StatusId")]
-        public virtual PurchaseOrderStatus Status { get; set; }
+        public virtual PurchaseOrderStatus? Status { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
@@ -32,11 +32,11 @@ namespace inventory_management_system.Models
         public int CreatedByUserId { get; set; }
 
         [ForeignKey("CreatedByUserId")]
-        public virtual User CreatedByUser { get; set; }
+        public virtual User? CreatedByUser { get; set; }
 
         // Navigation properties
-        public virtual ICollection<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
-        public virtual ICollection<InventoryTransactionHistory> Transactions { get; set; }
+        public virtual ICollection<PurchaseOrderDetail>? PurchaseOrderDetails { get; set; }
+        public virtual ICollection<InventoryTransactionHistory>? Transactions { get; set; }
     }
 
 }

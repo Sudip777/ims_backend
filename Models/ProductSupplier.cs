@@ -13,13 +13,13 @@ namespace inventory_management_system.Models
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]
-        public virtual Product Product { get; set; }
+        public virtual Product? Product { get; set; }
 
         [Required]
         public int SupplierId { get; set; }
 
         [ForeignKey("SupplierId")]
-        public virtual Supplier Supplier { get; set; }
+        public virtual Supplier? Supplier { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]

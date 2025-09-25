@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace inventory_management_system.Models
@@ -11,18 +12,17 @@ namespace inventory_management_system.Models
 
         [Required]
         [StringLength(100)]
-        public string CategoryName { get; set; }
+        public string? CategoryName { get; set; }
 
         public int? ParentCategoryId { get; set; }
 
         [ForeignKey("ParentCategoryId")]
-        public virtual Category ParentCategory { get; set; }
+        public virtual Category? ParentCategory { get; set; }
 
         // Navigation properties
-        public virtual ICollection<Category> SubCategories { get; set; }
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<Category>? SubCategories { get; set; }
+        public virtual ICollection<Product>? Products { get; set; }
 
-        [Index("IX_Categories_ParentId")]
-        public int? IndexedParentCategoryId => ParentCategoryId;
+       
     }
 }

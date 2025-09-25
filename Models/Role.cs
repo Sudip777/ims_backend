@@ -11,10 +11,10 @@ namespace inventory_management_system.Models
 
         [Required]
         [StringLength(50)]
-        public string RoleName { get; set; }
+        public string? RoleName { get; set; }
 
         // Navigation property
-        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<User>? Users { get; set; }
     }
 
 }

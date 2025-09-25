@@ -14,30 +14,26 @@
 
             [Required]
             [StringLength(100)]
-            [Index("IX_Users_Username", IsUnique = true)]
-            public string Username { get; set; }
+            public required string Username { get; set; }
 
             [Required]
             [StringLength(255)]
-            public string PasswordHash { get; set; }
+            public required string PasswordHash { get; set; }
 
-            [Required]
-            [StringLength(255)]
-            public string PasswordSalt { get; set; }
+            
 
             [StringLength(150)]
-            public string FullName { get; set; }
+            public required string FullName { get; set; }
 
             [Required]
             [StringLength(150)]
-            [Index("IX_Users_Email", IsUnique = true)]
-            public string Email { get; set; }
+            public required string Email { get; set; }
 
             [Required]
             public int RoleId { get; set; }
 
             [ForeignKey("RoleId")]
-            public virtual Role Role { get; set; }
+            public  virtual Role? Role { get; set; }
 
             public DateTime? LastLogin { get; set; }
 
@@ -48,34 +44,11 @@
             public DateTime CreatedAt { get; set; } = DateTime.Now;
 
             // Navigation properties
-            public virtual ICollection<Customer> CreatedCustomers { get; set; }
-            public virtual ICollection<Supplier> CreatedSuppliers { get; set; }
-            public virtual ICollection<Warehouse> CreatedWarehouses { get; set; }
-            public virtual ICollection<Order> CreatedOrders { get; set; }
-            public virtual ICollection<PurchaseOrder> CreatedPurchaseOrders { get; set; }
-            public virtual ICollection<InventoryTransactionHistory> Transactions { get; set; }
+            public virtual ICollection<Customer>? CreatedCustomers { get; set; }
+            public virtual ICollection<Supplier>? CreatedSuppliers { get; set; }
+            public virtual ICollection<Warehouse>? CreatedWarehouses { get; set; }
+            public virtual ICollection<Order>? CreatedOrders { get; set; }
+            public virtual ICollection<PurchaseOrder>? CreatedPurchaseOrders { get; set; }
+            public virtual ICollection<InventoryTransactionHistory>? Transactions { get; set; }
         }
-
-       
-      
-
-      
-
-     
-
-      
-
-       
-
-      
-
-      
-
-
-
-
-       
-
-
-    
 }
