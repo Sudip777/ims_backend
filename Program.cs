@@ -79,6 +79,9 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 // Dependency Injection
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
 var app = builder.Build();
 
 

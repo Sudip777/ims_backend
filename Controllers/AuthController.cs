@@ -15,7 +15,7 @@ namespace inventory_management_system.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+
     public class AccountController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
@@ -84,7 +84,7 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Register([FromBody] RegisterUserDto dto, CancellationToken cancellationToken)
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
             if (!ModelState.IsValid)
             {
