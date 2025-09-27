@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace inventory_management_system.Helpers
+namespace inventory_management_system.Security
 {
     public class PasswordHasher
     {

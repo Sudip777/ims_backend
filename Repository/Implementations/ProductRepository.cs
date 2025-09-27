@@ -5,6 +5,7 @@ using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using static inventory_management_system.Constants.BusinessConstants;
 
 namespace inventory_management_system.Repository.Implementations
 {
@@ -104,19 +105,21 @@ namespace inventory_management_system.Repository.Implementations
                 throw new KeyNotFoundException($"Product with ID {id} not found.");
 
             // Update fields
-            entity.Name = product.Name;
-            entity.SKU = product.SKU;
-            entity.UnitPrice = product.UnitPrice;
-            entity.CostPrice = product.CostPrice;
-            entity.SupplierId = (int)product.SupplierId;
-            entity.CategoryId = product.CategoryId;
-            entity.ReorderLevel = product.ReorderLevel;
-            entity.MinStock = product.MinStock;
-            entity.MaxStock = product.MaxStock;
-            entity.IsActive = product.IsActive;
+            //entity.Name = product.Name;
+            //entity.SKU = product.SKU;
+            //entity.UnitPrice = product.UnitPrice;
+            //entity.CostPrice = product.CostPrice;
+            //entity.SupplierId = (int)product.SupplierId;
+            //entity.CategoryId = product.CategoryId;
+            //entity.ReorderLevel = product.ReorderLevel;
+            //entity.MinStock = product.MinStock;
+            //entity.MaxStock = product.MaxStock;
+            //entity.IsActive = product.IsActive;
 
+            var updatedProduct = product.MappedProduct();
+            _context.Products.Update(updatedProduct);
             await _context.SaveChangesAsync();
-            return entity;
+            return updatedProduct;
         }
        
     }

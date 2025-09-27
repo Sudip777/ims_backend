@@ -63,7 +63,7 @@ namespace inventory_management_system.Services.Implementations
             }
             var updatedProduct = await _productRepository.UpdateProductAsync(dto, productId);
 
-            return ProductResponse.MappeddProduct(updatedProduct);
+            return ProductResponse.MappeddProductResponse(updatedProduct);
         }
 
         public async Task ValidateProduct(ProductDto dto, int productId)

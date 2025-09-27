@@ -25,7 +25,7 @@ namespace inventory_management_system.DTOs.Requests
 
         public  int? CategoryId { get; set; }
 
-        public int ReorderLevel { get; set; } = 10;
+        public int ReorderLevel { get; set; } = 0;
 
         public int MinStock { get; set; } = 0;
 

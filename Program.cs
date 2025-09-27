@@ -1,5 +1,5 @@
 using inventory_management_system.Data;
-using inventory_management_system.Helpers;
+using inventory_management_system.Exceptions;
 using inventory_management_system.Repository.Implementations;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Implementations;
@@ -83,6 +83,8 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 
 var app = builder.Build();
 

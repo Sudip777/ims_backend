@@ -1,5 +1,5 @@
 ﻿using inventory_management_system.DTOs.Requests;
-using inventory_management_system.Helpers;
+using inventory_management_system.Exceptions;
 using inventory_management_system.Models;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;

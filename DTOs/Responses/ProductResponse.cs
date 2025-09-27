@@ -23,7 +23,7 @@ namespace inventory_management_system.DTOs.Responses
         public DateTime CreatedAt { get; set; }
 
 
-        public static ProductResponse MappeddProduct(Product product)
+        public static ProductResponse MappeddProductResponse(Product product)
         {
             return new ProductResponse
             {

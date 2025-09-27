@@ -1,7 +1,10 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using inventory_management_system.Constants;
+using inventory_management_system.Helpers;
+using Microsoft.Data.SqlClient;
 using System.Security;
+using static inventory_management_system.Constants.ErrorConstants;
 
-namespace inventory_management_system.Helpers
+namespace inventory_management_system.Exceptions
 {
     public class ExceptionHandler
     {
@@ -19,55 +22,56 @@ namespace inventory_management_system.Helpers
                 switch (exception)
                 {
                     case ArgumentNullException or ArgumentException:
-                        errorKey = "BadRequest";
+                        errorKey = ErrorConstants.BAD_REQUEST;
                         statusCode = StatusCodes.Status400BadRequest;
-                        title = "Invalid input parameters.";
+                        title = Titles.INVALID_INPUT;
                         break;
 
                     case UnauthorizedAccessException:
-                        errorKey = "Unauthorized";
+                        errorKey = ErrorConstants.UNAUTHORIZED;
                         statusCode = StatusCodes.Status401Unauthorized;
-                        title = "User is not authorized.";
+                        title = Titles.USER_NOT_AUTHORIZED;
                         break;
 
                     case SecurityException:
-                        errorKey = "Forbidden";
+                        errorKey = ErrorConstants.FORBIDDEN;
                         statusCode = StatusCodes.Status403Forbidden;
-                        title = "Access to this resource is forbidden.";
+                        title = Titles.ACCESS_FORBIDDEN;
                         break;
 
                     case KeyNotFoundException:
-                        errorKey = "NotFound";
+                        errorKey = ErrorConstants.NOT_FOUND;
                         statusCode = StatusCodes.Status404NotFound;
-                        title = "The requested resource was not found.";
+                        title = Titles.RESOURCE_NOT_FOUND;
                         break;
 
                     case InvalidOperationException:
-                        errorKey = "Conflict";
+                        errorKey = ErrorConstants.CONFLICT;
                         statusCode = StatusCodes.Status409Conflict;
-                        title = "The request conflicts with the current state.";
+                        title = Titles.REQUEST_CONFLICT;
                         break;
                     case SqlException:
-                        errorKey = "DatabaseError";
+                        errorKey = ErrorConstants.DATABASE_ERROR;
                         statusCode = StatusCodes.Status500InternalServerError;
-                        title = "A database error occurred.";
+                        title = Titles.DATABASE_ERROR;
                         break;
 
                     case TimeoutException:
-                        errorKey = "Timeout";
+                        errorKey = ErrorConstants.TIMEOUT;
                         statusCode = StatusCodes.Status408RequestTimeout;
-                        title = "The request timed out while processing.";
+                        title = Titles.REQUEST_TIMEOUT;
                         break;
                     case ApplicationException:
-                        errorKey = "UnprocessableEntity";
+                        errorKey = ErrorConstants.UNPROCESSABLE_ENTITY;
                         statusCode = StatusCodes.Status422UnprocessableEntity;
-                        title = "Business rule validation failed.";
+                        title = Titles.BUSINESS_RULE_FAILED;
                         break;
 
                     default:
-                        errorKey = "InternalServerError";
+                        errorKey = ErrorConstants.INTERNAL_SERVER_ERROR;
                         statusCode = StatusCodes.Status500InternalServerError;
-                        title = "An unexpected error occurred.";
+                        title = Titles.UNEXPECTED_ERROR;
+
                         break;
                 }
                 // note : below is all the statuscode result of above exception

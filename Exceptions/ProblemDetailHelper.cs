@@ -1,4 +1,4 @@
-﻿using static inventory_management_system.Helpers.ExceptionHandler;
+﻿using static inventory_management_system.Exceptions.ExceptionHandler;
 
 namespace inventory_management_system.Helpers
 {
