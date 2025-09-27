@@ -19,6 +19,9 @@ namespace inventory_management_system.DTOs.Requests
         [Required]
         public string Email { get; set; } = null!;
 
+
+        public required bool IsActive { get; set; } = true;
+
         [Required]
         public int RoleId { get; set; } // Use only RoleId, not Role string
 

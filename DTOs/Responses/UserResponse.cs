@@ -10,7 +10,7 @@ namespace inventory_management_system.DTOs.Responses
         public string Email { get; set; } = null!;
         public int RoleId { get; set; }
         public DateTime CreatedAt { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; } 
 
         public static UserResponse FromUser(User user)
         {
@@ -21,7 +21,7 @@ namespace inventory_management_system.DTOs.Responses
                 FullName = user.FullName,
                 Email = user.Email,
                 RoleId = user.RoleId,
-                IsActive = true,
+                IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt
             };
         }

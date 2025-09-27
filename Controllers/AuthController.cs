@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Text;
 
 namespace inventory_management_system.Controllers
@@ -21,17 +22,17 @@ namespace inventory_management_system.Controllers
         private readonly IConfiguration _configuration;
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
-              public AccountController(
-              ApplicationDBContext context,
-              IConfiguration configuration,
-              ILogger<AccountController> logger,
-              IUserService userService)
-                {
-                    _context = context;
-                    _configuration = configuration;
-                    _logger = logger;
-                    _userService = userService;
-                }
+        public AccountController(
+        ApplicationDBContext context,
+        IConfiguration configuration,
+        ILogger<AccountController> logger,
+        IUserService userService)
+        {
+            _context = context;
+            _configuration = configuration;
+            _logger = logger;
+            _userService = userService;
+        }
 
 
 
@@ -141,7 +142,7 @@ namespace inventory_management_system.Controllers
             }
 
             var response = await _userService.GetCurrentUserAsync(userId);
-            if (response == null)
+           if (response == null)
             {
                 throw new KeyNotFoundException("User not found");
             }
@@ -233,8 +234,81 @@ namespace inventory_management_system.Controllers
                 );
             }
         }
+
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            if (id <= 0)
+            {
+                _logger.LogWarning("Invalid user ID {Id} provided for deletion.", id);
+                return BadRequest("Invalid user ID.");
+            }
+
+            try
+            {
+                await _userService.DeleteUserAsync(id);
+                _logger.LogInformation("User {Id} deleted successfully by {User}", id, User.Identity?.Name);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "User {Id} not found for deletion.", id);
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Operation failed for user {Id}: {Message}", id, ex.Message);
+                return StatusCode((int)HttpStatusCode.Forbidden, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error deleting user {Id}.", id);
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An unexpected error occurred.");
+            }
+        }
+
+        [HttpPut("{id}")]
+        //[Authorize(Roles = "Admin")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto userDto)
+        {
+            if (id <= 0)
+            {
+                _logger.LogWarning("Invalid user ID {Id} provided for update.", id);
+                return BadRequest("Invalid user ID.");
+            }
+
+            try
+            {
+                await _userService.UpdateUserAsync(id, userDto);
+                _logger.LogInformation("User {Id} updated successfully by {User}", id, User.Identity?.Name);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "User {Id} not found for update.", id);
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Operation failed for user {Id}: {Message}", id, ex.Message);
+                return StatusCode((int)HttpStatusCode.Forbidden, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error updating user {Id}.", id);
+                return StatusCode((int)HttpStatusCode.InternalServerError, "An unexpected error occurred.");
+            }
+        }
     }
-
-
-
 }
+
