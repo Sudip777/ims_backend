@@ -10,10 +10,13 @@ namespace inventory_management_system.Services.Implementations
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IUserRepository userRepository)
+
+        public UserService(IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<UserResponse> RegisterAsync(RegisterUserDto dto)
@@ -98,9 +101,7 @@ namespace inventory_management_system.Services.Implementations
                 throw new KeyNotFoundException("User not found");
             if (user.Role?.RoleName == "ADMIN")
             {
-                // You need a way to count the number of Admin users.
-                // This requires a new method in IUserRepository, e.g., Task<int> CountAdminsAsync();
-                // For now, let's assume you have added this method to IUserRepository and its implementation.
+              
                 var adminCount = await _userRepository.CountAdminsAsync();
                 if (adminCount == 1)
                     throw new InvalidOperationException("Cannot delete the last Admin user.");
@@ -109,6 +110,21 @@ namespace inventory_management_system.Services.Implementations
             return true;
         }
 
-       
+        public  int GetCurrentUserId()
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user == null || !user.Identity.IsAuthenticated)
+                throw new UnauthorizedAccessException();
+
+            var claim = user.Claims.FirstOrDefault(c => c.Type == "UserId")
+                        ?? throw new UnauthorizedAccessException("User ID claim missing");
+
+            if (!int.TryParse(claim.Value, out int userId))
+                throw new UnauthorizedAccessException("User ID claim invalid");
+
+            return userId;
+        }
+
+
     }
 }

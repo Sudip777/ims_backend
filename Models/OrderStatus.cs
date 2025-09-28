@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace inventory_management_system.Models
 {
+    [Table("OrderStatus")]
     public class OrderStatus
     {
         [Key]

@@ -25,7 +25,6 @@ namespace inventory_management_system.Models
         public virtual OrderStatus? Status { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public decimal TotalAmount { get; set; } // Computed via trigger
 
         [Required]

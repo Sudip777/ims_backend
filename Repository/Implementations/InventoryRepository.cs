@@ -42,7 +42,7 @@ namespace inventory_management_system.Repository.Implementations
                .FirstOrDefaultAsync(p => p.InventoryId == inventoryId);
 
             if (entity == null)
-                throw new KeyNotFoundException($"Product with ID {inventoryId} not found.");
+                throw new KeyNotFoundException($"Inventory with ID {inventoryId} not found.");
 
 
             var updatedInventory = inventory.MappedInventory();

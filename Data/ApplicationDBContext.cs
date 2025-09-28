@@ -22,6 +22,7 @@ namespace inventory_management_system.Data
         public DbSet<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
         public DbSet<InventoryTransactionHistory> InventoryTransactions { get; set; }
         public DbSet<ProductSupplier> ProductSuppliers { get; set; }
+        public DbSet<OrderStatus> OrderStatuses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

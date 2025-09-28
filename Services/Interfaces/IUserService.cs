@@ -14,5 +14,6 @@ namespace inventory_management_system.Services.Interfaces
         Task<UserResponse?> GetCurrentUserAsync(int userId);
         Task<User?> ValidateLoginAsync(LoginDto loginDto);
         Task<User?> ValidateRefreshTokenUserAsync(int userId);
+        int GetCurrentUserId();
     }
 }

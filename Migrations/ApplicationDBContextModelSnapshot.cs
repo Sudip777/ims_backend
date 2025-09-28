@@ -191,7 +191,6 @@ namespace inventory_management_system.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("OrderId");

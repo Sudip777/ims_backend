@@ -1,0 +1,114 @@
+﻿using inventory_management_system.Data;
+using inventory_management_system.DTOs.Requests;
+using inventory_management_system.DTOs.Responses;
+using inventory_management_system.Models;
+using inventory_management_system.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace inventory_management_system.Repository.Implementations
+{
+    public class OrderRepository:IOrderRepository
+
+    {
+        private readonly ApplicationDBContext _context;
+
+        public OrderRepository(ApplicationDBContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<Order> GetByIdAsync(int id)
+        {
+              return  await _context.Orders
+             .AsNoTracking() // optional if you don’t need tracking
+             .Include(o => o.OrderDetails)
+             .Include(o => o.Customer)
+             .Include(o => o.Status)
+             .FirstOrDefaultAsync(o => o.OrderId == id);
+
+        }
+
+        public async Task<IEnumerable<Order>> GetAllAsync()
+        {
+            return await _context.Orders
+                .Include(o => o.OrderDetails)
+                .ToListAsync();
+        }
+
+        public async Task<Order> AddAsync(Order order)
+        {
+            
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            // Reload with navigation properties
+            var createdOrder = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Status)
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
+
+            return createdOrder!;
+        }
+
+
+        public async Task<Order> UpdateOrderAsync(OrderDto orderDto, int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            if (order == null)
+                throw new KeyNotFoundException($"Order with ID {id} not found.");
+
+            // Update simple properties
+            order.StatusId = orderDto.StatusId;
+            order.CustomerId = orderDto.CustomerId;
+            order.OrderDate = DateTime.UtcNow;
+
+            // Remove existing details
+            _context.OrderDetails.RemoveRange(order.OrderDetails);
+
+            // Add new details
+            order.OrderDetails = orderDto.OrderDetails.Select(od => new OrderDetail
+            {
+                ProductId = od.ProductId,
+                Quantity = od.Quantity,
+                UnitPrice = od.UnitPrice
+            }).ToList();
+
+            // Recalculate total
+            order.TotalAmount = order.OrderDetails.Sum(d => d.Quantity * d.UnitPrice);
+
+            await _context.SaveChangesAsync();
+
+            return order;
+        }
+
+
+
+        public async Task<bool> DeleteOrderAsync(int id)
+        {
+            var order = await GetByIdAsync(id);
+            if (order != null)
+            {
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+            }
+                return true;
+        }
+
+        public async Task<Order> UpdateStatusAsync(int id, int newStatusId)
+        {
+            var order = await GetByIdAsync(id);
+            if (order == null)
+                throw new KeyNotFoundException($"Order with ID {id} not found.");
+
+            order.StatusId = newStatusId;
+            await _context.SaveChangesAsync();
+
+            return order;
+        }
+
+    }
+}

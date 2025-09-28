@@ -12,8 +12,8 @@ using inventory_management_system.Data;
 namespace inventory_management_system.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250925075152_11")]
-    partial class _11
+    [Migration("20250928124726_CreateCustomersAndOrderStatuses3")]
+    partial class CreateCustomersAndOrderStatuses3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -194,7 +194,6 @@ namespace inventory_management_system.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("OrderId");

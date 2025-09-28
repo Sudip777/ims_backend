@@ -1,4 +1,5 @@
 ﻿using inventory_management_system.DTOs.Requests;
+using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Models;
 using inventory_management_system.Services.Interfaces;
@@ -53,6 +54,8 @@ namespace inventory_management_system.Controllers
         [HttpGet("getAllInventories/{id}")]
         public async Task<IActionResult> GetInventoryById(int id)
         {
+
+           
             try
             {
                 var data = await _inventoryService.GetInventoryByIdAsync(id);
@@ -151,7 +154,7 @@ namespace inventory_management_system.Controllers
         {
             try
             {
-                var lowStockItems = await _inventoryService.GetLowStocks();
+                var lowStockItems = await _inventoryService.GetLowStocks() ?? new List<InventoryResponse>(); ;
                 return Ok(new
                 {
                     message = "Low stock items retrieved successfully",
