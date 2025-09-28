@@ -1,5 +1,6 @@
 ﻿using Azure;
 using inventory_management_system.DTOs.Requests;
+using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Services.Implementations;
 using inventory_management_system.Services.Interfaces;
@@ -26,6 +27,9 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPost("createRoles")]
+        [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateRole([FromBody] RoleDto dto)
         {
 
@@ -42,6 +46,12 @@ namespace inventory_management_system.Controllers
                 
                 var role = dto.MappedRole();
                 var createdRole = await _roleService.RegisterRoleAsync(role);
+
+                if(createdRole == null)
+                {
+                    throw new KeyNotFoundException($"Error while Creating Role");
+
+                }
 
                 return Ok(new
                 {
@@ -65,6 +75,9 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPost("getRoles")]
+        [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAllRoles()
         {
             try

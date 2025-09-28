@@ -1,9 +1,11 @@
 ﻿using inventory_management_system.DTOs.Requests;
+using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Models;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace inventory_management_system.Controllers
 {
@@ -21,6 +23,9 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpGet("getProductById/{id}")]
+        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetProductById(int id)
         {
 
@@ -54,6 +59,9 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpGet("getAllProducts")]
+        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
         public async Task<IActionResult> GetAllProducts()
         {
@@ -80,7 +88,9 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPost("createProduct")]
-
+        [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateProduct([FromBody] ProductDto dto)
         {
             if (!ModelState.IsValid)
@@ -114,6 +124,9 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto dto)
         {
             if (!ModelState.IsValid)
@@ -154,6 +167,10 @@ namespace inventory_management_system.Controllers
 
 
         [HttpDelete("{id}")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             try
@@ -166,7 +183,7 @@ namespace inventory_management_system.Controllers
                 return Ok(new
                 {
                     message = "Product Deleted Successfully",
-                    response_code = "00"
+                  
                 });
             }
             catch (InvalidOperationException ex)

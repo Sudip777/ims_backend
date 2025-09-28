@@ -1,4 +1,5 @@
 ﻿using inventory_management_system.DTOs.Requests;
+using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Services.Implementations;
 using inventory_management_system.Services.Interfaces;
@@ -25,6 +26,9 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPost("createOrder")]
+        [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto orderDto)
         {
             if (!ModelState.IsValid)
@@ -58,6 +62,9 @@ namespace inventory_management_system.Controllers
 
 
         [HttpGet("getAllOrders")]
+        [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAllOrders()
         {
             try
@@ -84,6 +91,9 @@ namespace inventory_management_system.Controllers
 
 
         [HttpGet("getOrderById/{id}")]
+        [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetOrderById(int id)
         {
             try
@@ -112,6 +122,9 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPut("updateOrder/{id}")]
+        [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateOrder([FromBody] OrderDto dto , int id)
         {
             if (!ModelState.IsValid)
@@ -151,6 +164,10 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPatch("updateStatus/{id}")]
+        [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
         public async Task<IActionResult> UpdateOrderStatus([FromRoute] int id, [FromBody] int statusId)
         {
             try
