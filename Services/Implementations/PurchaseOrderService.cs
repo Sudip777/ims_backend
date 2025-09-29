@@ -11,55 +11,47 @@ namespace inventory_management_system.Services.Implementations
     public class PurchaseOrderService: IPurchaseOrderService
     {
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
+        private readonly IUserService _userService;
         private readonly ApplicationDBContext _context;
 
-        public PurchaseOrderService(IPurchaseOrderRepository purchaseOrderRepository, ApplicationDBContext context)
+        public PurchaseOrderService(IPurchaseOrderRepository purchaseOrderRepository, ApplicationDBContext context, IUserService userService)
         {
             _purchaseOrderRepository = purchaseOrderRepository;
             _context = context;
+            _userService = userService;
         }
 
         public async Task<PurchaseOrderResponse> CreatePurchaseOrderAsync(PurchaseOrderDto orderDto)
         {
-            // 2. Map DTO
             var order = orderDto.MappedPurchaseOrder();
             order.OrderDate = DateTime.UtcNow;
 
             if (order.PurchaseOrderDetails == null)
                 order.PurchaseOrderDetails = new List<PurchaseOrderDetail>();
 
-            // total
             order.TotalAmount = order.PurchaseOrderDetails.Any()
                 ? order.PurchaseOrderDetails.Sum(d => d.Quantity * d.UnitPrice)
-                : 0m;   // default to 0 if no details
+                : 0m;
+
+            order.CreatedByUserId = _userService.GetCurrentUserId();
+
+            // Validate product IDs before save
+            var productIds = order.PurchaseOrderDetails.Select(d => d.ProductId).ToList();
+            var validProductIds = await _context.Products
+                .Where(p => productIds.Contains(p.ProductId))
+                .Select(p => p.ProductId)
+                .ToListAsync();
+            var invalidIds = productIds.Except(validProductIds).ToList();
+            if (invalidIds.Any())
+                throw new Exception($"Invalid ProductIds: {string.Join(",", invalidIds)}");
 
             var createdPurchaseOrder = await _purchaseOrderRepository.AddPurchaseOrderAsync(order);
 
-            //Map to response DTO
-            var response = new PurchaseOrderResponse
-            {
-                PurchaseOrderId = createdPurchaseOrder.PurchaseOrderId,
-                SuplierId = createdPurchaseOrder.SupplierId,
-                SupplierName = createdPurchaseOrder.Supplier.Name ,
-                StatusId = createdPurchaseOrder.StatusId,
-                StatusName = createdPurchaseOrder.Status.Name,
-                TotalAmout = createdPurchaseOrder.TotalAmount,
-                PurchaseOrderDetails = createdPurchaseOrder.PurchaseOrderDetails.Select(od => new PurchaseOrderDetailResponse
-                {
-                    PurchaseOrderDetailId = od.PurchaseOrderDetailId,
-                    ProductId = od.ProductId,
-                    Quantity = od.Quantity,
-                    UnitPrice = od.UnitPrice
-                }).ToList()
-            };
-
-            return response;
+            // Now safe to map, because Supplier/Status/Details are loaded
+            return PurchaseOrderResponse.MappedPurchaseOrderResponse(createdPurchaseOrder);
         }
 
-        public Task<PurchaseOrderResponse> CreatePurchaseOrderAsync(OrderDto orderDto)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public Task<IEnumerable<PurchaseOrderResponse>> GetAllPurchaseOrdersAsync()
         {
@@ -68,11 +60,11 @@ namespace inventory_management_system.Services.Implementations
                 .Select(o => new PurchaseOrderResponse
                 {
                     PurchaseOrderId = o.PurchaseOrderId,
-                    SuplierId = o.SupplierId,
+                    SupplierId = o.SupplierId,
                     SupplierName = o.Supplier.Name,
                     StatusId = o.StatusId,
                     StatusName = o.Status.Name,
-                    TotalAmout = o.TotalAmount,
+                    TotalAmount = o.TotalAmount,
                     PurchaseOrderDetails = o.PurchaseOrderDetails.Select(od => new PurchaseOrderDetailResponse
                     {
                         PurchaseOrderDetailId = od.PurchaseOrderDetailId,
@@ -94,11 +86,11 @@ namespace inventory_management_system.Services.Implementations
                 .Select(o => new PurchaseOrderResponse
                 {
                     PurchaseOrderId = o.PurchaseOrderId,
-                    SuplierId = o.SupplierId,
+                    SupplierId = o.SupplierId,
                     SupplierName = o.Supplier.Name,
                     StatusId = o.StatusId,
                     StatusName = o.Status.Name,
-                    TotalAmout = o.TotalAmount,
+                    TotalAmount = o.TotalAmount,
                     PurchaseOrderDetails = o.PurchaseOrderDetails.Select(od => new PurchaseOrderDetailResponse
                     {
                         PurchaseOrderDetailId = od.PurchaseOrderDetailId,

@@ -7,8 +7,7 @@ namespace inventory_management_system.DTOs.Requests
     public class PurchaseOrderDetailDto
     {
 
-        [Required]
-        public int PurchaseOrderId { get; set; }
+       
 
         [Required]
         public int ProductId { get; set; }
@@ -28,7 +27,6 @@ namespace inventory_management_system.DTOs.Requests
 
             return new PurchaseOrderDetail
             {
-                PurchaseOrderId = this.PurchaseOrderId,
                 ProductId = this.ProductId,
                 Quantity = this.Quantity,
                 UnitPrice = this.UnitPrice

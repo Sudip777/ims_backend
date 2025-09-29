@@ -1,18 +1,17 @@
 ﻿using inventory_management_system.Models;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace inventory_management_system.DTOs.Responses
 {
     public class PurchaseOrderResponse
     {
         public int PurchaseOrderId { get; set; }
-        public int SuplierId { get; set; }
+        public int SupplierId { get; set; }
         public int StatusId { get; set; }
         public string SupplierName { get; set; } = String.Empty;
         public string StatusName { get; set; } = String.Empty;
 
-        public decimal TotalAmout { get; set; }
+        public decimal TotalAmount { get; set; }
         public List<PurchaseOrderDetailResponse>? PurchaseOrderDetails { get; set; } // Nested details
 
 
@@ -21,16 +20,17 @@ namespace inventory_management_system.DTOs.Responses
             return new PurchaseOrderResponse
             {
                 PurchaseOrderId = od.PurchaseOrderId,
-                SuplierId = od.SupplierId,
-                SupplierName = od.Supplier.Name,
+                SupplierId = od.SupplierId,
+                SupplierName = od.Supplier?.Name ?? string.Empty,
                 StatusId = od.StatusId,
-                StatusName = od.Status.Name,
-                TotalAmout = od.TotalAmount,
-                PurchaseOrderDetails = od.PurchaseOrderDetails
-                                     .Select(od => PurchaseOrderDetailResponse.MappedPurchaseOrderDetailResponse(od))
-                                     .ToList()
+                StatusName = od.Status?.Name ?? string.Empty,
+                TotalAmount = od.TotalAmount,
+                PurchaseOrderDetails = od.PurchaseOrderDetails?
+                    .Select(temp => PurchaseOrderDetailResponse.MappedPurchaseOrderDetailResponse(temp))
+                    .ToList() ?? new List<PurchaseOrderDetailResponse>()
             };
         }
+
 
     }
 }

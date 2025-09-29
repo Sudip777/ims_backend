@@ -17,26 +17,34 @@ namespace inventory_management_system.Repository.Implementations
 
         public async Task<PurchaseOrder> GetPurchaseOrderByIdAsync(int id)
         {
-            return await _context.PurchaseOrders.FirstOrDefaultAsync(o => o.PurchaseOrderId == id);
+            return await _context.PurchaseOrders.Include(p => p.Supplier)
+    .Include(p => p.Status)
+    .Include(p => p.PurchaseOrderDetails).FirstOrDefaultAsync(o => o.PurchaseOrderId == id);
 
         }
 
         public async Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderAsync()
         {
-            return await _context.PurchaseOrders.ToListAsync();
+            return await _context.PurchaseOrders.Include(p => p.Supplier)
+    .Include(p => p.Status)
+    .Include(p => p.PurchaseOrderDetails).ToListAsync();
         }
 
         public async Task<PurchaseOrder> AddPurchaseOrderAsync(PurchaseOrder order)
         {
-
             _context.PurchaseOrders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Reload with navigation properties
-            var createdOrder = await _context.PurchaseOrders.FirstOrDefaultAsync(o => o.PurchaseOrderId == order.PurchaseOrderId);
+            // Reload with navigation properties so service won’t get nulls
+            var createdOrder = await _context.PurchaseOrders
+                .Include(o => o.Supplier)
+                .Include(o => o.Status)
+                .Include(o => o.PurchaseOrderDetails)
+                .FirstOrDefaultAsync(o => o.PurchaseOrderId == order.PurchaseOrderId);
 
             return createdOrder!;
         }
+
 
 
         public async Task<PurchaseOrder> UpdatePurchaseOrderAsync(PurchaseOrderDto orderDto, int id)
@@ -68,6 +76,17 @@ namespace inventory_management_system.Repository.Implementations
 
             return order;
         }
+        public async Task<PurchaseOrder> UpdatePurchaseOrderStatusAsync(int id, int newStatusId)
+        {
+            var order = await GetPurchaseOrderByIdAsync(id);
+            if (order == null)
+                throw new KeyNotFoundException($"Order with ID {id} not found.");
+
+            order.StatusId = newStatusId;
+            await _context.SaveChangesAsync();
+
+            return order;
+        }
 
 
 
@@ -82,18 +101,8 @@ namespace inventory_management_system.Repository.Implementations
         //    return true;
         //}
 
-        public async Task<PurchaseOrder> UpdatePurchaseOrderStatusAsync(int id, int newStatusId)
-        {
-            var order = await GetPurchaseOrderByIdAsync(id);
-            if (order == null)
-                throw new KeyNotFoundException($"Order with ID {id} not found.");
 
-            order.StatusId = newStatusId;
-            await _context.SaveChangesAsync();
 
-            return order;
-        }
 
-       
     }
 }

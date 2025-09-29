@@ -21,7 +21,6 @@ namespace inventory_management_system.DTOs.Requests
                 StatusId = this.StatusId,
                 PurchaseOrderDetails = this.PurchaseOrderDetails.Select(od => new PurchaseOrderDetail
                 {
-                    PurchaseOrderId = od.PurchaseOrderId,
                     ProductId = od.ProductId,
                     Quantity = od.Quantity,
                     UnitPrice = od.UnitPrice
