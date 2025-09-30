@@ -11,6 +11,8 @@ namespace inventory_management_system.DTOs.Responses
         public string? CustomerName { get; set; }
         public int StatusId { get; set; } = 0;
         public string? StatusName { get; set; }
+        public int CreatedByUserId { get; set; }
+
         public List<OrderDetailResponse>? OrderDetails { get; set; } // Nested details
         
         public static OrderResponse MappedOrderResponse(Order orderEntity)
@@ -24,6 +26,7 @@ namespace inventory_management_system.DTOs.Responses
                 StatusId = orderEntity.StatusId,
                 StatusName = orderEntity.Status?.Name,
                 TotalAmount = orderEntity.TotalAmount,
+                CreatedByUserId = orderEntity.CreatedByUserId,
                 OrderDetails = orderEntity.OrderDetails
                                      .Select(od => OrderDetailResponse.MappedOrderDetailResponse(od))
                                      .ToList()

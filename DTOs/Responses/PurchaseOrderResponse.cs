@@ -12,6 +12,7 @@ namespace inventory_management_system.DTOs.Responses
         public string StatusName { get; set; } = String.Empty;
 
         public decimal TotalAmount { get; set; }
+        public int CreatedByUserId { get; set; }
         public List<PurchaseOrderDetailResponse>? PurchaseOrderDetails { get; set; } // Nested details
 
 
@@ -25,6 +26,7 @@ namespace inventory_management_system.DTOs.Responses
                 StatusId = od.StatusId,
                 StatusName = od.Status?.Name ?? string.Empty,
                 TotalAmount = od.TotalAmount,
+                CreatedByUserId = od.CreatedByUserId,
                 PurchaseOrderDetails = od.PurchaseOrderDetails?
                     .Select(temp => PurchaseOrderDetailResponse.MappedPurchaseOrderDetailResponse(temp))
                     .ToList() ?? new List<PurchaseOrderDetailResponse>()

@@ -37,7 +37,6 @@ namespace inventory_management_system.Services.Implementations
 
             // 2. Map DTO
             var order = orderDto.MappedOrder();
-            order.CreatedByUserId = _userService.GetCurrentUserId();
             order.OrderDate = DateTime.UtcNow;
 
             if (order.OrderDetails == null)
@@ -48,6 +47,7 @@ namespace inventory_management_system.Services.Implementations
                 ? order.OrderDetails.Sum(d => d.Quantity * d.UnitPrice)
                 : 0m;   // default to 0 if no details
 
+            order.CreatedByUserId = _userService.GetCurrentUserId();
             var createdOrder = await _orderRepository.AddAsync(order);
 
             //Map to response DTO
@@ -61,6 +61,7 @@ namespace inventory_management_system.Services.Implementations
                 StatusId = createdOrder.StatusId,
                 StatusName = createdOrder.Status.Name,
                 TotalAmount = createdOrder.TotalAmount,
+                CreatedByUserId = createdOrder.CreatedByUserId,
                 OrderDetails = createdOrder.OrderDetails.Select(od => new OrderDetailResponse
                 {
                     ProductId = od.ProductId,
@@ -91,6 +92,7 @@ namespace inventory_management_system.Services.Implementations
                     StatusId = o.StatusId,
                     StatusName = o.Status.Name,
                     TotalAmount = o.TotalAmount,
+                    CreatedByUserId = o.CreatedByUserId,
                     OrderDetails = o.OrderDetails.Select(od => new OrderDetailResponse
                     {
                         OrderDetailId = od.OrderDetailId,
@@ -119,6 +121,7 @@ namespace inventory_management_system.Services.Implementations
                     StatusId = o.StatusId,
                     StatusName = o.Status.Name,
                     TotalAmount = o.TotalAmount,
+                    CreatedByUserId = _userService.GetCurrentUserId(),
                     OrderDetails = o.OrderDetails.Select(od => new OrderDetailResponse
                     {
                         OrderDetailId = od.OrderDetailId,

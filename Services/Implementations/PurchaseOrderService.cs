@@ -24,7 +24,7 @@ namespace inventory_management_system.Services.Implementations
         public async Task<PurchaseOrderResponse> CreatePurchaseOrderAsync(PurchaseOrderDto orderDto)
         {
             var order = orderDto.MappedPurchaseOrder();
-            order.OrderDate = DateTime.UtcNow;
+            order.CreatedByUserId = _userService.GetCurrentUserId();
 
             if (order.PurchaseOrderDetails == null)
                 order.PurchaseOrderDetails = new List<PurchaseOrderDetail>();
@@ -32,8 +32,6 @@ namespace inventory_management_system.Services.Implementations
             order.TotalAmount = order.PurchaseOrderDetails.Any()
                 ? order.PurchaseOrderDetails.Sum(d => d.Quantity * d.UnitPrice)
                 : 0m;
-
-            order.CreatedByUserId = _userService.GetCurrentUserId();
 
             // Validate product IDs before save
             var productIds = order.PurchaseOrderDetails.Select(d => d.ProductId).ToList();
@@ -65,6 +63,7 @@ namespace inventory_management_system.Services.Implementations
                     StatusId = o.StatusId,
                     StatusName = o.Status.Name,
                     TotalAmount = o.TotalAmount,
+                    CreatedByUserId = o.CreatedByUserId,
                     PurchaseOrderDetails = o.PurchaseOrderDetails.Select(od => new PurchaseOrderDetailResponse
                     {
                         PurchaseOrderDetailId = od.PurchaseOrderDetailId,
@@ -91,6 +90,7 @@ namespace inventory_management_system.Services.Implementations
                     StatusId = o.StatusId,
                     StatusName = o.Status.Name,
                     TotalAmount = o.TotalAmount,
+                    CreatedByUserId = o.CreatedByUserId,
                     PurchaseOrderDetails = o.PurchaseOrderDetails.Select(od => new PurchaseOrderDetailResponse
                     {
                         PurchaseOrderDetailId = od.PurchaseOrderDetailId,

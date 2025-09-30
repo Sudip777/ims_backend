@@ -1,5 +1,4 @@
 ﻿using inventory_management_system.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace inventory_management_system.DTOs.Responses
 {
