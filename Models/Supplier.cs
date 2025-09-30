@@ -33,7 +33,7 @@ namespace inventory_management_system.Models
         public int CreatedByUserId { get; set; }
 
         [ForeignKey("CreatedByUserId")]
-        public required virtual User CreatedByUser { get; set; }
+        public  virtual User CreatedByUser { get; set; }
 
         // Navigation properties
         public virtual ICollection<Product>? Products { get; set; }

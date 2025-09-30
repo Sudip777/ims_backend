@@ -1,4 +1,5 @@
-﻿using inventory_management_system.DTOs.Requests;
+﻿using inventory_management_system.Constants;
+using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Services.Implementations;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace inventory_management_system.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ApiRoutes.Orders.Base)]
     [ApiController]
     [Authorize]
     public class OrderController : ControllerBase
@@ -25,7 +26,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpPost("createOrder")]
+        [HttpPost]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -61,7 +62,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpGet("getAllOrders")]
+        [HttpGet]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -90,7 +91,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpGet("getOrderById/{id}")]
+        [HttpGet(ApiRoutes.Orders.ById)]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -121,7 +122,7 @@ namespace inventory_management_system.Controllers
        
 
 
-        [HttpPut("updateOrder/{id}")]
+        [HttpPut(ApiRoutes.Orders.ById)]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -163,7 +164,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpPatch("updateStatus/{id}")]
+        [HttpPatch(ApiRoutes.Orders.ById)]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

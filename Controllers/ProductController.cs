@@ -1,4 +1,5 @@
-﻿using inventory_management_system.DTOs.Requests;
+﻿using inventory_management_system.Constants;
+using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Models;
@@ -9,7 +10,7 @@ using System.Net;
 
 namespace inventory_management_system.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ApiRoutes.Products.Base)]
     [ApiController]
     [Authorize]
     public class ProductController : ControllerBase
@@ -22,7 +23,7 @@ namespace inventory_management_system.Controllers
             _logger = logger;
         }
 
-        [HttpGet("getProductById/{id}")]
+        [HttpGet(ApiRoutes.Products.ById)]
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -58,7 +59,7 @@ namespace inventory_management_system.Controllers
 
         }
 
-        [HttpGet("getAllProducts")]
+        [HttpGet]
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -87,7 +88,7 @@ namespace inventory_management_system.Controllers
             }
         }
 
-        [HttpPost("createProduct")]
+        [HttpPost]
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -123,7 +124,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut(ApiRoutes.Products.ById)]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -166,7 +167,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete(ApiRoutes.Orders.ById)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]

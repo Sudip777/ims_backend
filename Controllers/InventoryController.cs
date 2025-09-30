@@ -1,4 +1,5 @@
-﻿using inventory_management_system.DTOs.Requests;
+﻿using inventory_management_system.Constants;
+using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Models;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace inventory_management_system.Controllers
 {
 
-    [Route("api/[controller]")]
+    [Route(ApiRoutes.Inventory.Base)]
     [ApiController]
     [Authorize]
     public class InventoryController: ControllerBase
@@ -24,7 +25,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpGet("getAllInventories")]
+        [HttpGet]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -54,7 +55,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpGet("getAllInventories/{id}")]
+        [HttpGet(ApiRoutes.Inventory.ById)]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -86,7 +87,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpPost("createInventory")]
+        [HttpPost]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -121,7 +122,7 @@ namespace inventory_management_system.Controllers
             }
         }
 
-        [HttpPut("updateInventory{id}")]
+        [HttpPut(ApiRoutes.Inventory.ById)]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -161,7 +162,7 @@ namespace inventory_management_system.Controllers
             }
         }
 
-        [HttpGet("lowStocks")]
+        [HttpGet(ApiRoutes.Inventory.LowStock)]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

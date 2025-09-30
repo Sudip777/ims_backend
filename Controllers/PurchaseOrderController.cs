@@ -1,4 +1,5 @@
 ﻿using Azure;
+using inventory_management_system.Constants;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace inventory_management_system.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ApiRoutes.PurchaseOrders.Base)]
     [ApiController]
     [Authorize]
     public class PurchaseOrderController : ControllerBase
@@ -24,7 +25,7 @@ namespace inventory_management_system.Controllers
 
         }
 
-        [HttpGet("getAllPurchaseOrders")]
+        [HttpGet]
         [ProducesResponseType(typeof(PurchaseOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -45,7 +46,7 @@ namespace inventory_management_system.Controllers
             });
         }
 
-        [HttpGet("getPurchaseOrderById/{id}")]
+        [HttpGet(ApiRoutes.PurchaseOrders.ById)]
         [ProducesResponseType(typeof(PurchaseOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -81,7 +82,7 @@ namespace inventory_management_system.Controllers
 
         }
 
-        [HttpPost("createPurchaseOrder")]
+        [HttpPost]
         [ProducesResponseType(typeof(PurchaseOrderResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -124,7 +125,7 @@ namespace inventory_management_system.Controllers
             }
         }
 
-        [HttpPut("updatePurchaseOrder/{id}")]
+        [HttpPut(ApiRoutes.PurchaseOrders.ById)]
         [ProducesResponseType(typeof(PurchaseOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -169,7 +170,7 @@ namespace inventory_management_system.Controllers
             }
         }
 
-        [HttpPatch("updatePurchaseOrderStatus/{id}")]
+        [HttpPatch(ApiRoutes.PurchaseOrders.ById)]
         [ProducesResponseType(typeof(PurchaseOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

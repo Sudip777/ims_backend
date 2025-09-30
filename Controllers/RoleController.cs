@@ -1,4 +1,5 @@
 ﻿using Azure;
+using inventory_management_system.Constants;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace inventory_management_system.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ApiRoutes.Roles.Base)]
     [ApiController]
     [Authorize(Roles = "ADMIN")]
 
@@ -26,7 +27,7 @@ namespace inventory_management_system.Controllers
 
         }
 
-        [HttpPost("createRoles")]
+        [HttpPost]
         [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -74,7 +75,7 @@ namespace inventory_management_system.Controllers
         }
 
 
-        [HttpPost("getRoles")]
+        [HttpGet]
         [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

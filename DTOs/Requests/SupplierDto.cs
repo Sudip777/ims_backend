@@ -1,0 +1,37 @@
+﻿using inventory_management_system.Models;
+using inventory_management_system.Validations;
+using System.ComponentModel.DataAnnotations;
+
+namespace inventory_management_system.DTOs.Requests
+{
+    public class SupplierDto
+    {
+        [Required(ErrorMessage = "Name is required")]
+        [MinLength(4, ErrorMessage = "Name must be at least 4 characters long")]
+        [MaxLength(25, ErrorMessage = "Name cannot exceed 25 characters long")]
+        public required string Name { get; set; }
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+
+        public required string Email { get; set; }
+        [Required]
+        [PhoneNumberValidation]
+        public required string Phone { get; set; }
+        [MinLength(4, ErrorMessage = "Address must be at least 4 characters long")]
+        [MaxLength(50, ErrorMessage = "Address cannot exceed 25 characters long")]
+        public required string Address { get; set; }
+        //public int? CreatedByUserId { get; set; }
+        public Supplier MappedSupplier()
+        {
+            return new Supplier
+            {
+                Name = this.Name,
+                Email = this.Email,
+                Phone = this.Phone,
+                Address = this.Address,
+                //CreatedByUserId = (int)this.CreatedByUserId
+
+            };
+        }
+    }
+}

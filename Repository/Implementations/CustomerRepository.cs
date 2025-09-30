@@ -32,13 +32,6 @@ namespace inventory_management_system.Repository.Implementations
 
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
-
-            //// Reload with navigation properties (orders)
-            //var createdCustomer = await _context.Customers
-
-            //    .FirstOrDefaultAsync(c => c.CustomerId == customer.CustomerId);
-
-            //return createdCustomer!;
             return customer;
         }
 

@@ -2,6 +2,7 @@
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
+using inventory_management_system.Services.Implementations;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,33 +11,32 @@ using System.Net;
 namespace inventory_management_system.Controllers
 {
 
-    [Route(ApiRoutes.Customers.Base)]
+    [Route(ApiRoutes.Suppliers.Base)]
     [ApiController]
     [Authorize]
-    public class CustomerController:ControllerBase
+    public class SupplierController:ControllerBase
     {
-        private readonly ILogger<CustomerController> _logger;
-        private readonly ICustomerService _customerService;
-        public CustomerController(ICustomerService customerService, ILogger<CustomerController> logger)
+        private readonly ILogger<SupplierController> _logger;
+        private readonly ISupplierService _supplierService;
+        public SupplierController(ISupplierService supplierService, ILogger<SupplierController> logger)
         {
             _logger = logger;
-            _customerService = customerService;
+            _supplierService = supplierService;
         }
 
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<CustomerResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<SupplierResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetAllCustomers()
+        public async Task<IActionResult> GetAllSuppliers()
         {
             try
             {
-                var customers = await _customerService.GetAllCustomerAsync();
-                return  Ok(new
+                var suppliers = await _supplierService.GetAllSupplierAsync();
+                return Ok(new
                 {
-                    message = "Customers Retrieved Successfully",
-                    result = customers,
+                    message = "Suppliers Retrieved Successfully",
+                    result = suppliers,
                     response_code = "00"
                 });
             }
@@ -52,18 +52,17 @@ namespace inventory_management_system.Controllers
             }
         }
 
-        [HttpGet(ApiRoutes.Customers.ById)]
-        [ProducesResponseType(typeof(CustomerResponse), StatusCodes.Status200OK)]
+        [HttpGet(ApiRoutes.Suppliers.ById)]
+        [ProducesResponseType(typeof(SupplierResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetCustomerById(int id)
+        public async Task<IActionResult> GetSupplierById(int id)
         {
             try
             {
-                var customer = await _customerService.GetCustomerByIdAsync(id);
-                return  Ok(new
+                var customer = await _supplierService.GetSupplierByIdAsync(id);
+                return Ok(new
                 {
-                    message = "Customer Retrieved Successfully",
+                    message = "Supplier Retrieved Successfully",
                     result = customer,
                     response_code = "00"
                 });
@@ -74,18 +73,17 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving inventories.");
+                _logger.LogError(ex, "Error occurred while retrieving supplier data.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
             }
         }
 
-
         [HttpPost]
-        [ProducesResponseType(typeof(CustomerResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(SupplierResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateCustomer([FromBody] CustomerDto customerDto)
+        public async Task<IActionResult> CreateSupplier([FromBody] SupplierDto supplierDto)
         {
             if (!ModelState.IsValid)
             {
@@ -96,11 +94,11 @@ namespace inventory_management_system.Controllers
             }
             try
             {
-                var createdCustomer = await _customerService.CreateCustomerAsync(customerDto);
-                return  Ok(new
+                var createdSupplier = await _supplierService.CreateSupplierAsync(supplierDto);
+                return Ok(new
                 {
-                    message = "Customer Created Successfully",
-                    result = createdCustomer,
+                    message = "Supplier Created Successfully",
+                    result = createdSupplier,
                     response_code = "00"
                 });
             }
@@ -110,17 +108,17 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating an inventory.");
+                _logger.LogError(ex, "Error occurred while creating a supplier.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
             }
         }
 
-        [HttpPut(ApiRoutes.Customers.ById)]
-        [ProducesResponseType(typeof(CustomerResponse), StatusCodes.Status200OK)]
+        [HttpPut(ApiRoutes.Suppliers.ById)]
+        [ProducesResponseType(typeof(SupplierResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDto customerDto)
+        public async Task<IActionResult> UpdateSupplier(int id, [FromBody] SupplierDto supplierDto)
         {
             if (!ModelState.IsValid)
             {
@@ -131,11 +129,11 @@ namespace inventory_management_system.Controllers
             }
             try
             {
-                var updatedCustomer = await _customerService.UpdateCustomerAsync(id, customerDto);
-                return  Ok(new
+                var updatedSupplier = await _supplierService.UpdateSupplierAsync(id, supplierDto);
+                return Ok(new
                 {
-                    message = "Customer Updated Successfully",
-                    result = updatedCustomer,
+                    message = "Supplier Updated Successfully",
+                    result = updatedSupplier,
                     response_code = "00"
                 });
             }
@@ -156,47 +154,43 @@ namespace inventory_management_system.Controllers
             }
         }
 
-        [HttpDelete(ApiRoutes.Customers.ById)]
+        [HttpDelete(ApiRoutes.Suppliers.ById)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public async Task<IActionResult> DeleteCustomer(int id)
+
+        public async Task<IActionResult> DeleteSupplier(int id)
         {
             try
             {
-                var result = await _customerService.DeleteCustomerAsync(id);
+                var result = await _supplierService.DeleteSupplierAsync(id);
                 if (!result)
                 {
                     return new NotFoundObjectResult(new
                     {
-                        message = $"Customer with ID {id} not found.",
-                        response_code = "01"
+                        message = $"Supplier with ID {id} not found.",
+                        
                     });
                 }
-                return  Ok(new
+                return Ok(new
                 {
-                    message = "Customer Deleted Successfully",
-                    result = result,
-                    response_code = "00"
+                    message = "Supplier Deleted Successfully",
+
                 });
             }
             catch (KeyNotFoundException ex)
             {
-                _logger.LogWarning(ex, "User {Id} not found for deletion.", id);
+                _logger.LogWarning(ex, "Supplier {Id} not found for deletion.", id);
                 return NotFound(ex.Message);
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogWarning(ex, "Operation failed for user {Id}: {Message}", id, ex.Message);
+                _logger.LogWarning(ex, "Operation failed for supplier {Id}: {Message}", id, ex.Message);
                 return StatusCode((int)HttpStatusCode.Forbidden, ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error deleting user {Id}.", id);
+                _logger.LogError(ex, "Unexpected error deleting supplier {Id}.", id);
                 return StatusCode((int)HttpStatusCode.InternalServerError, "An unexpected error occurred.");
             }
         }
     }
-
 }

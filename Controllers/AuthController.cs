@@ -1,4 +1,5 @@
 ﻿using Azure;
+using inventory_management_system.Constants;
 using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
@@ -15,7 +16,7 @@ using System.Text;
 
 namespace inventory_management_system.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ApiRoutes.Auth.Base)]
     [ApiController]
 
     public class AccountController : ControllerBase
@@ -38,7 +39,7 @@ namespace inventory_management_system.Controllers
 
 
 
-        [HttpPost("login")]
+        [HttpPost(ApiRoutes.Auth.Login)]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto loginDTO)
         {
@@ -81,7 +82,7 @@ namespace inventory_management_system.Controllers
 
         }
 
-        [HttpPost("register")]
+        [HttpPost(ApiRoutes.Auth.Register)]
         [AllowAnonymous]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -126,7 +127,7 @@ namespace inventory_management_system.Controllers
 
 
 
-        [HttpGet("me")]
+        [HttpGet]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -161,7 +162,7 @@ namespace inventory_management_system.Controllers
 
 
 
-        [HttpPost("refresh")]
+        [HttpPost(ApiRoutes.Auth.RefreshToken)]
         [AllowAnonymous]
         public async Task<IActionResult> RefreshToken()
         {
