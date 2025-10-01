@@ -18,16 +18,16 @@ namespace inventory_management_system.Repository.Implementations
         public async Task<PurchaseOrder> GetPurchaseOrderByIdAsync(int id)
         {
             return await _context.PurchaseOrders.Include(p => p.Supplier)
-    .Include(p => p.Status)
-    .Include(p => p.PurchaseOrderDetails).FirstOrDefaultAsync(o => o.PurchaseOrderId == id);
+            .Include(p => p.Status)
+            .Include(p => p.PurchaseOrderDetails).FirstOrDefaultAsync(o => o.PurchaseOrderId == id);
 
         }
 
         public async Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderAsync()
         {
             return await _context.PurchaseOrders.Include(p => p.Supplier)
-    .Include(p => p.Status)
-    .Include(p => p.PurchaseOrderDetails).ToListAsync();
+            .Include(p => p.Status)
+            .Include(p => p.PurchaseOrderDetails).ToListAsync();
         }
 
         public async Task<PurchaseOrder> AddPurchaseOrderAsync(PurchaseOrder order)
@@ -35,7 +35,7 @@ namespace inventory_management_system.Repository.Implementations
             _context.PurchaseOrders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Reload with navigation properties so service won’t get nulls
+            // Reload with navigation properties
             var createdOrder = await _context.PurchaseOrders
                 .Include(o => o.Supplier)
                 .Include(o => o.Status)
@@ -54,7 +54,7 @@ namespace inventory_management_system.Repository.Implementations
             if (order == null)
                 throw new KeyNotFoundException($"Order with ID {id} not found.");
 
-            // Update simple properties
+            // Update
             order.StatusId = orderDto.StatusId;
             order.OrderDate = DateTime.UtcNow;
 
@@ -71,9 +71,7 @@ namespace inventory_management_system.Repository.Implementations
 
             // Recalculate total
             order.TotalAmount = order.PurchaseOrderDetails.Sum(d => d.Quantity * d.UnitPrice);
-
             await _context.SaveChangesAsync();
-
             return order;
         }
         public async Task<PurchaseOrder> UpdatePurchaseOrderStatusAsync(int id, int newStatusId)

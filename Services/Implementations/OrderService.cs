@@ -27,12 +27,8 @@ namespace inventory_management_system.Services.Implementations
           
         }
        
-        
-
         public async Task<OrderResponse> CreateOrderAsync(OrderDto orderDto)
         {
-           
-
             //Map DTO
             var order = orderDto.MappedOrder();
             if (order.OrderDetails == null)
@@ -72,6 +68,9 @@ namespace inventory_management_system.Services.Implementations
 
         public Task<bool> DeleteOrderAsync(int id)
         {
+            if (id <= 0)
+                throw new ArgumentException("Order ID must be greater than zero.", nameof(id));
+
             return _orderRepository.DeleteOrderAsync(id);
         }
 
@@ -155,6 +154,9 @@ namespace inventory_management_system.Services.Implementations
         {
             if (id <= 0)
                 throw new ArgumentException("Order ID must be greater than zero.", nameof(id));
+
+            if (newStatusId <= 0)
+                throw new ArgumentException("Status ID must be greater than zero.", nameof(id));
 
             var order = await _orderRepository.GetByIdAsync(id);
 

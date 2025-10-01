@@ -1,8 +1,6 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
-using inventory_management_system.Models;
-using inventory_management_system.Repository.Implementations;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -39,8 +37,6 @@ namespace inventory_management_system.Services.Implementations
                 CreatedByUserId = createdResponse.CreatedByUserId,
             };
         }
-
-      
 
         public async Task<IEnumerable<SupplierResponse>> GetAllSupplierAsync()
         {
@@ -101,6 +97,10 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<bool> DeleteSupplierAsync(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Invalid Supplier ID");
+            }
 
             var user = await _supplierRepository.GetSupplierByIdAsync(id);
             if (user == null)
@@ -109,7 +109,5 @@ namespace inventory_management_system.Services.Implementations
             await _supplierRepository.DeleteSupplierAsync(id);
             return true;
         }
-
-       
     }
 }

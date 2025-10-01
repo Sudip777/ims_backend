@@ -112,6 +112,9 @@ namespace inventory_management_system.Services.Implementations
             if (id <= 0)
                 throw new ArgumentException(" Purchase Order ID must be greater than zero.", nameof(id));
 
+            if (newStatusId <= 0)
+                throw new ArgumentException(" Status ID must be greater than zero.", nameof(id));
+
             var order = await _purchaseOrderRepository.GetPurchaseOrderByIdAsync(id);
 
             if (order == null)

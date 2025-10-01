@@ -1,7 +1,6 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
-using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +20,7 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<ProductResponse> RegisterProductAsync(ProductDto dto)
         {
-            // Ensure SupplierId and CategoryId are not null before passing to repository
-            if (dto.CategoryId == null)
-            {
-                throw new ArgumentException("CategoryId must not be null.");
-            }
+           
 
             var isPresent = CheckProductAndCategoryId(dto.SupplierId, dto.CategoryId.Value);
             if (await isPresent)
@@ -41,6 +36,9 @@ namespace inventory_management_system.Services.Implementations
 
         public Task<ProductResponse> GetProductByIdAsync(int id)
         {
+            if (id <= 0)
+                throw new ArgumentException("Product ID must be greater than zero.", nameof(id));
+
             return _productRepository.GetProductByIdAsync(id);
         }
 
@@ -51,11 +49,17 @@ namespace inventory_management_system.Services.Implementations
 
         public Task<bool> DeleteProductAsync(int productId)
         {
+            if (productId <= 0)
+                throw new ArgumentException("Order ID must be greater than zero.", nameof(productId));
+
             return _productRepository.DeleteProductAsync(productId);
         }
 
         public async Task<ProductResponse> UpdateProductAsync(int productId, ProductDto dto)
         {
+            if (productId <= 0)
+                throw new ArgumentException("Order ID must be greater than zero.", nameof(productId));
+
             var productResponse = await _productRepository.GetProductByIdAsync(productId);
             if (productResponse == null)
             {

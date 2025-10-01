@@ -41,7 +41,7 @@ namespace inventory_management_system.Repository.Implementations
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Reload with navigation properties
+            //with navigation properties
             var createdOrder = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.Status)
@@ -61,7 +61,7 @@ namespace inventory_management_system.Repository.Implementations
             if (order == null)
                 throw new KeyNotFoundException($"Order with ID {id} not found.");
 
-            // Update simple properties
+            // Update
             order.StatusId = orderDto.StatusId;
             order.CustomerId = orderDto.CustomerId;
             order.OrderDate = DateTime.UtcNow;
@@ -79,9 +79,7 @@ namespace inventory_management_system.Repository.Implementations
 
             // Recalculate total
             order.TotalAmount = order.OrderDetails.Sum(d => d.Quantity * d.UnitPrice);
-
             await _context.SaveChangesAsync();
-
             return order;
         }
 

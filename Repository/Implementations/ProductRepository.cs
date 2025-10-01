@@ -103,19 +103,6 @@ namespace inventory_management_system.Repository.Implementations
 
             if (entity == null)
                 throw new KeyNotFoundException($"Product with ID {id} not found.");
-
-            // Update fields
-            //entity.Name = product.Name;
-            //entity.SKU = product.SKU;
-            //entity.UnitPrice = product.UnitPrice;
-            //entity.CostPrice = product.CostPrice;
-            //entity.SupplierId = (int)product.SupplierId;
-            //entity.CategoryId = product.CategoryId;
-            //entity.ReorderLevel = product.ReorderLevel;
-            //entity.MinStock = product.MinStock;
-            //entity.MaxStock = product.MaxStock;
-            //entity.IsActive = product.IsActive;
-
             var updatedProduct = product.MappedProduct();
             _context.Products.Update(updatedProduct);
             await _context.SaveChangesAsync();

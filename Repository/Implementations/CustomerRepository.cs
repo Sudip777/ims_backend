@@ -19,7 +19,7 @@ namespace inventory_management_system.Repository.Implementations
             // Check if the user creating the customer exists
             var userExists = await _context.Users.AnyAsync(u => u.UserId == customer.CreatedByUserId);
             if (!userExists)
-                throw new InvalidOperationException($"User with ID {customer.CreatedByUserId} does not exist.");
+                throw new InvalidOperationException($"Customer with ID {customer.CreatedByUserId} does not exist.");
 
             // Check Uniqueness
             var customerExists = await _context.Customers
@@ -28,7 +28,7 @@ namespace inventory_management_system.Repository.Implementations
                                c.Phone == customer.Phone);
 
             if (customerExists)
-                throw new InvalidOperationException("A customer with the same name, email, and phone already exists.");
+                throw new InvalidOperationException("A customer with the same Name, Email Or Phone Already Exists.");
 
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();

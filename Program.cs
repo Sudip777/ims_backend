@@ -108,6 +108,8 @@ builder.Services.AddScoped<IProductSupplierRepository, ProductSupplierRepository
 builder.Services.AddScoped<IProductSupplierService, ProductSupplierService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddHttpContextAccessor();
 
 // -----------------------

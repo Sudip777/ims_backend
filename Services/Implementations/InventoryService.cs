@@ -101,10 +101,14 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<InventoryResponse> UpdateInventoryAsync(InventoryDto inventory, int inventoryId)
         {
+            if (inventoryId <= 0)
+            {
+                throw new ArgumentException("Invalid inventory ID");
+            }
             var inventoryResponse = await _inventoryRepository.GetInventoryByIdAsync(inventoryId);
             if (inventoryResponse == null)
             {
-                throw new KeyNotFoundException($"Inventory with ID {inventoryId} not found.");
+                throw new KeyNotFoundException($"Inventory with ID {inventoryId} not Found.");
             }
             var updatedInventory = await _inventoryRepository.UpdateInventoryAsync(inventory, inventoryId);
 

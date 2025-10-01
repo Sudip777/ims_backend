@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using inventory_management_system.DTOs.Responses;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace inventory_management_system.Models
@@ -17,10 +18,15 @@ namespace inventory_management_system.Models
         public int CreatedByUserId { get; set; }
 
         [ForeignKey("CreatedByUserId")]
-        public required virtual User CreatedByUser { get; set; }
+        public  virtual User CreatedByUser { get; set; }
 
         // Navigation properties
-        public required virtual ICollection<Inventory> Inventories { get; set; }
-        public required virtual ICollection<InventoryTransactionHistory> Transactions { get; set; }
+        public  virtual ICollection<Inventory> Inventories { get; set; }
+        public  virtual ICollection<InventoryTransactionHistory> Transactions { get; set; }
+
+        internal object Select(Func<object, WarehouseResponse> value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

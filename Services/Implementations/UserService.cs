@@ -43,6 +43,10 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<User?> GetByIdAsync(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Invalid User ID");
+            }
             return await _userRepository.GetByIdAsync(id);
         }
         public async Task<UserResponse?> GetCurrentUserAsync(int userId)
@@ -62,11 +66,19 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<User?> ValidateRefreshTokenUserAsync(int userId)
         {
+            if (userId <= 0)
+            {
+                throw new ArgumentException("Invalid User ID");
+            }
             return await _userRepository.GetByIdAsync(userId);
         }
 
         public async Task<UserResponse> UpdateUserAsync(int userId, UpdateUserDto dto)
         {
+            if (userId <= 0)
+            {
+                throw new ArgumentException("Invalid User ID");
+            }
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
                 throw new KeyNotFoundException("User not found");
@@ -96,6 +108,11 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<bool> DeleteUserAsync(int userId)
         {
+            if (userId <= 0)
+            {
+                throw new ArgumentException("Invalid User ID");
+            }
+
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
                 throw new KeyNotFoundException("User not found");
