@@ -27,7 +27,6 @@ namespace inventory_management_system.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CustomerResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAllCustomers()
         {
             try

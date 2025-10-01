@@ -16,7 +16,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// -----------------------
+// Add Services
+// -----------------------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
@@ -32,7 +34,6 @@ builder.Services.AddSwaggerGen(option =>
         BearerFormat = "JWT",
         Scheme = "Bearer"
     });
-
 
     option.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -50,12 +51,15 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-// Auth
+// -----------------------
+// JWT Authentication
+// -----------------------
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
     var key = builder.Configuration["Jwt:Key"];
     if (string.IsNullOrEmpty(key))
@@ -75,12 +79,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-//DB Connection
+// -----------------------
+// Database Connection
+// -----------------------
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
+// -----------------------
 // Dependency Injection
+// -----------------------
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
@@ -99,12 +106,27 @@ builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IProductSupplierRepository, ProductSupplierRepository>();
 builder.Services.AddScoped<IProductSupplierService, ProductSupplierService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddHttpContextAccessor();
 
+// -----------------------
+// FluentValidation Setup
+// -----------------------
+builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductSupplierValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CategoriesValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
+// -----------------------
+// Build App
+// -----------------------
 var app = builder.Build();
 
-
+// -----------------------
+// Swagger
+// -----------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -114,14 +136,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
+// -----------------------
+// Global Exception Handling
+// -----------------------
+if (!app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
-}
-else
-{
-    // Global exception handling middleware
     app.UseExceptionHandler(errorApp =>
     {
         errorApp.Run(async context =>
@@ -143,22 +162,17 @@ else
         });
     });
 }
+else
+{
+    app.UseDeveloperExceptionPage();
+}
 
-
+// -----------------------
+// Middleware
+// -----------------------
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
-//Fluent Validation Setup
-// Register all validators in your assembly
-builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<ProductSupplierValidator>();
-
-//adds automatic validation pipeline
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
 
 app.Run();

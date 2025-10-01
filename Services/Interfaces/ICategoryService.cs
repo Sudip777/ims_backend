@@ -1,0 +1,12 @@
+﻿using inventory_management_system.DTOs.Requests;
+using inventory_management_system.DTOs.Responses;
+using inventory_management_system.Models;
+
+namespace inventory_management_system.Services.Interfaces
+{
+    public interface ICategoryService
+    {
+        Task<CategoryResponse> CreateCategoryAsync(CategoryDto category);
+        Task<IEnumerable<CategoryResponse>> GetAllCategoriesAsync();
+    }
+}
