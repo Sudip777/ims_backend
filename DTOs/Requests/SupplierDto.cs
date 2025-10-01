@@ -20,7 +20,8 @@ namespace inventory_management_system.DTOs.Requests
         [MinLength(4, ErrorMessage = "Address must be at least 4 characters long")]
         [MaxLength(50, ErrorMessage = "Address cannot exceed 25 characters long")]
         public required string Address { get; set; }
-        //public int? CreatedByUserId { get; set; }
+        public bool IsActive { get; set; } = true;
+
         public Supplier MappedSupplier()
         {
             return new Supplier
@@ -29,8 +30,7 @@ namespace inventory_management_system.DTOs.Requests
                 Email = this.Email,
                 Phone = this.Phone,
                 Address = this.Address,
-                //CreatedByUserId = (int)this.CreatedByUserId
-
+                IsActive = this.IsActive
             };
         }
     }

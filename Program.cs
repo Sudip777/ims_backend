@@ -1,9 +1,12 @@
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
 using inventory_management_system.Data;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Repository.Implementations;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Implementations;
 using inventory_management_system.Services.Interfaces;
+using inventory_management_system.Validations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -76,6 +79,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
 // Dependency Injection
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -93,6 +97,8 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<IProductSupplierRepository, ProductSupplierRepository>();
+builder.Services.AddScoped<IProductSupplierService, ProductSupplierService>();
 builder.Services.AddHttpContextAccessor();
 
 
@@ -145,5 +151,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//Fluent Validation Setup
+// Register all validators in your assembly
+builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductSupplierValidator>();
+
+//adds automatic validation pipeline
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
 app.Run();

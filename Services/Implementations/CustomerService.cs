@@ -84,10 +84,13 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<CustomerResponse> UpdateCustomerAsync(int id, CustomerDto customer)
         {
+            if (id <= 0)
+                throw new ArgumentException("Customer ID must be greater than zero.", nameof(id));
+
             var data = await _customerRepository.GetCustomerByIdAsync(id);
             if (data == null)
             {
-                throw new KeyNotFoundException($"Inventory with ID {id} not found.");
+                throw new KeyNotFoundException($"Customer with ID {id} not found.");
             }
             var tempData = await _customerRepository.UpdateCustomerAsync(customer, id);
 
@@ -97,7 +100,7 @@ namespace inventory_management_system.Services.Implementations
         {
             var user = await _customerRepository.GetCustomerByIdAsync(id);
             if (user == null)
-                throw new KeyNotFoundException("User not found");
+                throw new KeyNotFoundException($"User with {id} Not Found");
            
             await _customerRepository.DeleteCustomerAsync(id);
             return true;

@@ -31,14 +31,10 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<OrderResponse> CreateOrderAsync(OrderDto orderDto)
         {
-            // Validate
-            var validator = new BusinessValidations();
-            validator.ValidateOrder(orderDto);   // now throws if invalid
+           
 
-            // 2. Map DTO
+            //Map DTO
             var order = orderDto.MappedOrder();
-            order.OrderDate = DateTime.UtcNow;
-
             if (order.OrderDetails == null)
                 order.OrderDetails = new List<OrderDetail>();
 

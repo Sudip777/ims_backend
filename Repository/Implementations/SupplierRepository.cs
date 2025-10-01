@@ -16,13 +16,13 @@ namespace inventory_management_system.Repository.Implementations
         }
         public async Task<Supplier> CreateSupplierAsync(Supplier supplier)
         {
-            // Check if the user creating the customer exists
-            var userExists = await _context.Suppliers.AnyAsync(u => u.SupplierId == supplier.CreatedByUserId);
-            if (!userExists)
-                throw new InvalidOperationException($"Supplier with ID {supplier.CreatedByUserId} does not exist.");
+            // Check if the user creating the supplier exists
+            //var userExists = await _context.Suppliers.AnyAsync(u => u.SupplierId == supplier.CreatedByUserId);
+            //if (!userExists)
+            //    throw new InvalidOperationException($"Supplier with ID {supplier.CreatedByUserId} does not exist.");
 
             // Check Uniqueness
-            var supplierExists = await _context.Customers
+            var supplierExists = await _context.Suppliers
                 .AnyAsync(c => c.Name == supplier.Name ||
                                c.Email == supplier.Email ||
                                c.Phone == supplier.Phone);
@@ -56,11 +56,12 @@ namespace inventory_management_system.Repository.Implementations
             if (existingSuplier == null)
                 throw new Exception("Customer not found");
 
-            // Map only the updatable fields from DTO → entity
+            // Map fields from DTO → entity
             existingSuplier.Name = supplier.Name;
             existingSuplier.Email = supplier.Email;
             existingSuplier.Phone = supplier.Phone;
             existingSuplier.Address = supplier.Address;
+            existingSuplier.IsActive = supplier.IsActive;
 
             await _context.SaveChangesAsync();
 
@@ -68,7 +69,13 @@ namespace inventory_management_system.Repository.Implementations
         }
         public Task DeleteSupplierAsync(int id)
         {
-            throw new NotImplementedException();
+           var res = _context.Suppliers.Find(id);
+            if (res != null)
+            {
+                _context.Suppliers.Remove(res);
+                _context.SaveChanges();
+            }
+            return Task.CompletedTask;
         }
     }
 }

@@ -90,17 +90,7 @@
         {
             public const string Base = "api/purchaseorders";
             public const string ById = "{id}";
-            public const string BySupplier = "by-supplier/{supplierId}";
-            public const string Items = "{id}/items";
-            public const string ItemById = "{id}/items/{itemId}";
-            public const string Receive = "{id}/receive";
-            public const string PartialReceive = "{id}/receive-partial";
-            public const string Status = "{id}/status";
-            public const string Pending = "pending";
-            public const string Approved = "approved";
-            public const string Received = "received";
-            public const string Approve = "{id}/approve";
-            public const string Cancel = "{id}/cancel";
+           
         }
         #endregion
 
@@ -109,12 +99,7 @@
         {
             public const string Base = "api/roles";
             public const string ById = "{id}";
-            public const string Permissions = "{id}/permissions";
-            public const string AddPermission = "{id}/permissions";
-            public const string RemovePermission = "{id}/permissions/{permissionId}";
-            public const string Assign = "assign/{userId}/{roleId}";
-            public const string Revoke = "revoke/{userId}/{roleId}";
-            public const string UserRoles = "user/{userId}";
+          
         }
         #endregion
 
@@ -126,10 +111,7 @@
             public const string Search = "search";
             public const string Active = "active";
             public const string Activate = "{id}/activate";
-            public const string Deactivate = "{id}/deactivate";
-            public const string Products = "{id}/products";
-            public const string PurchaseOrders = "{id}/purchaseorders";
-            public const string Performance = "{id}/performance";
+           
         }
         #endregion
 
@@ -137,12 +119,9 @@
         public static class ProductSuppliers
         {
             public const string Base = "api/productsuppliers";
-            public const string ByCompositeKey = "{productId}/{supplierId}";
-            public const string ByProduct = "by-product/{productId}";
-            public const string BySupplier = "by-supplier/{supplierId}";
-            public const string SetPreferred = "{productId}/preferred/{supplierId}";
-            public const string UpdateCostPrice = "{productId}/{supplierId}/cost-price";
-            public const string ComparePrices = "compare-prices/{productId}";
+            public const string ById = "{id}";
+
+
         }
         #endregion
 
@@ -169,17 +148,6 @@
         }
         #endregion
 
-        #region Report Routes
-        public static class Reports
-        {
-            public const string Base = "api/reports";
-            public const string Sales = "sales";
-            public const string Inventory = "inventory";
-            public const string Purchase = "purchase";
-            public const string Customer = "customer";
-            public const string Supplier = "supplier";
-            public const string Export = "export";
-        }
-        #endregion
+        
     }
 }
