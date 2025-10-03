@@ -42,7 +42,7 @@ namespace inventory_management_system.Repository.Implementations
             if (existingWarehouse == null)
                 throw new Exception("Warehouse is not Found");
 
-            // Map only the updatable fields from DTO → entity
+            //Map DTO → entity
             existingWarehouse.Name = warehouse.Name;
             await _context.SaveChangesAsync();
 

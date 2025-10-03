@@ -19,6 +19,8 @@ namespace inventory_management_system.DTOs.Requests
             [Column(TypeName = "decimal(18,2)")]
 
             public decimal UnitPrice { get; set; }
+            [Required]
+            public int WarehouseId { get; set; } 
 
             // Maps this DTO to the entity model
             public OrderDetail MappedOrderDetail()
@@ -26,6 +28,7 @@ namespace inventory_management_system.DTOs.Requests
                 return new OrderDetail
                 {
                     ProductId = this.ProductId,
+                    WarehouseId = this.WarehouseId,
                     Quantity = this.Quantity,
                     UnitPrice = this.UnitPrice
                 };

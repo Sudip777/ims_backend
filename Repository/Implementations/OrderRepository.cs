@@ -1,6 +1,5 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
-using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +19,7 @@ namespace inventory_management_system.Repository.Implementations
         public async Task<Order> GetByIdAsync(int id)
         {
               return  await _context.Orders
-             .AsNoTracking() // optional if you don’t need tracking
+             .AsNoTracking() 
              .Include(o => o.OrderDetails)
              .Include(o => o.Customer)
              .Include(o => o.Status)
@@ -37,11 +36,19 @@ namespace inventory_management_system.Repository.Implementations
 
         public async Task<Order> AddAsync(Order order)
         {
-            
             _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
 
-            //with navigation properties
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                var inner = ex.InnerException?.Message ?? ex.Message;
+                throw new InvalidOperationException($"Database error while creating order: {inner}");
+            }
+
+            // Load navigation properties
             var createdOrder = await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.Status)
@@ -50,6 +57,7 @@ namespace inventory_management_system.Repository.Implementations
 
             return createdOrder!;
         }
+
 
 
         public async Task<Order> UpdateOrderAsync(OrderDto orderDto, int id)

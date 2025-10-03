@@ -78,7 +78,27 @@ namespace inventory_management_system.Repository.Implementations
                 .FirstAsync(i => i.InventoryId == entity.InventoryId);
         }
 
+        public async Task<Inventory> GetByProductAndWarehouseAsync(int pid, int wid)
+        {
+            return await _context.Inventories
+                .Include(i => i.Product)
+                .Include(i => i.Warehouse)
+                .FirstOrDefaultAsync(i => i.ProductId == pid && i.WarehouseId == wid);
+        }
 
+        public async Task<Inventory> UpdateInventoryFromOrderAsync(int productId, int warehouseId, int quantityChange)
+        {
+            var inventory = await _context.Inventories
+                .FirstOrDefaultAsync(i => i.ProductId == productId && i.WarehouseId == warehouseId);
+            if (inventory == null)
+                throw new InvalidOperationException($"No inventory found for ProductId {productId} in WarehouseId {warehouseId}");
 
+            inventory.Quantity += quantityChange;
+            if (inventory.Quantity < 0)
+                throw new InvalidOperationException($"Inventory cannot be negative for ProductId {productId} in WarehouseId {warehouseId}");
+
+            await _context.SaveChangesAsync();
+            return inventory;
+        }
     }
 }

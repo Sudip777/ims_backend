@@ -16,11 +16,6 @@ namespace inventory_management_system.Repository.Implementations
         }
         public async Task<Supplier> CreateSupplierAsync(Supplier supplier)
         {
-            // Check if the user creating the supplier exists
-            //var userExists = await _context.Suppliers.AnyAsync(u => u.SupplierId == supplier.CreatedByUserId);
-            //if (!userExists)
-            //    throw new InvalidOperationException($"Supplier with ID {supplier.CreatedByUserId} does not exist.");
-
             // Check Uniqueness
             var supplierExists = await _context.Suppliers
                 .AnyAsync(c => c.Name == supplier.Name ||
@@ -28,7 +23,7 @@ namespace inventory_management_system.Repository.Implementations
                                c.Phone == supplier.Phone);
 
             if (supplierExists)
-                throw new InvalidOperationException("A supplier with the same name, email or  phone already exists.");
+                throw new InvalidOperationException("A supplier with the same Name, Email or  Phone number already exists.");
 
             _context.Suppliers.Add(supplier);
             await _context.SaveChangesAsync();
@@ -56,7 +51,7 @@ namespace inventory_management_system.Repository.Implementations
             if (existingSuplier == null)
                 throw new Exception("Customer not found");
 
-            // Map fields from DTO → entity
+            // Map DTO → entity
             existingSuplier.Name = supplier.Name;
             existingSuplier.Email = supplier.Email;
             existingSuplier.Phone = supplier.Phone;

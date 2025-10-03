@@ -12,8 +12,8 @@ using inventory_management_system.Data;
 namespace inventory_management_system.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250928124726_CreateCustomersAndOrderStatuses3")]
-    partial class CreateCustomersAndOrderStatuses3
+    [Migration("20251003081943_updateOrderDetails1")]
+    partial class updateOrderDetails1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -227,11 +227,16 @@ namespace inventory_management_system.Migrations
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
                     b.HasKey("OrderDetailId");
 
                     b.HasIndex("OrderId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("WarehouseId");
 
                     b.ToTable("OrderDetails", t =>
                         {
@@ -254,7 +259,7 @@ namespace inventory_management_system.Migrations
 
                     b.HasKey("StatusId");
 
-                    b.ToTable("OrderStatus");
+                    b.ToTable("OrderStatus", (string)null);
                 });
 
             modelBuilder.Entity("inventory_management_system.Models.Product", b =>
@@ -364,7 +369,6 @@ namespace inventory_management_system.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("PurchaseOrderId");
@@ -711,9 +715,17 @@ namespace inventory_management_system.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("inventory_management_system.Models.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Order");
 
                     b.Navigation("Product");
+
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("inventory_management_system.Models.Product", b =>

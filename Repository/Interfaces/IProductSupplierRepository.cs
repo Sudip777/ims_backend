@@ -1,5 +1,4 @@
 ﻿using inventory_management_system.Models;
-using inventory_management_system.Repository.Implementations;
 
 namespace inventory_management_system.Repository.Interfaces
 {

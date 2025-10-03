@@ -28,6 +28,10 @@ namespace inventory_management_system.Models
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; }
+        [Required]
+        public int WarehouseId { get; set; } // Added
+        [ForeignKey("WarehouseId")]
+        public Warehouse Warehouse { get; set; } // Navigation property
     }
 
 }

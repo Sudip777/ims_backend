@@ -34,7 +34,7 @@ namespace inventory_management_system.Models
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; }
 
-        public int? PurchaseOrderId { get; set; }
+        public int? PurchaseOrderId { get; set; } = null;
 
         [ForeignKey("PurchaseOrderId")]
         public virtual PurchaseOrder PurchaseOrder { get; set; }

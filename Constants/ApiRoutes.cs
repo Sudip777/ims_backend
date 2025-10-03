@@ -15,9 +15,7 @@
             public const string Register = "register";
             public const string RefreshToken = "refresh-token";
             public const string Logout = "logout";
-            public const string ChangePassword = "change-password";
-            public const string ForgotPassword = "forgot-password";
-            public const string ResetPassword = "reset-password";
+           
         }
        
 
@@ -25,7 +23,6 @@
         {
             public const string Base = "api/customers";
             public const string ById = "{id}";
-            public const string OrderHistory = "{id}/order-history";
         }
        
 

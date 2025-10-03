@@ -72,10 +72,9 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task ValidateProduct(ProductDto dto, int productId)
         {
-            // UnitPrice > CostPrice
             if (dto.UnitPrice <= dto.CostPrice)
             {
-                throw new ArgumentException("UnitPrice must be greater than CostPrice.");
+                throw new ArgumentException("Cost Price must be greater than UnitPrice.");
             }
 
             //MinStock <= ReorderLevel <= MaxStock
@@ -84,7 +83,6 @@ namespace inventory_management_system.Services.Implementations
                 throw new ArgumentException("ReorderLevel must be between MinStock and MaxStock.");
             }
 
-            //uniqueness
             if (!string.IsNullOrEmpty(dto.SKU))
             {
                 var skuExists = await _context.Products

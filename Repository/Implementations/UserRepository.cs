@@ -68,7 +68,7 @@ namespace inventory_management_system.Repository.Implementations
             }
             // Soft delete
             user.IsActive = false;
-            user.LastLogin = DateTime.UtcNow; // Optional: Update last activity timestamp
+            user.LastLogin = DateTime.UtcNow; 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             return (user);

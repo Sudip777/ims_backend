@@ -49,6 +49,8 @@ namespace inventory_management_system.Data
             modelBuilder.Entity<InventoryTransactionHistory>()
                 .HasIndex(t => new { t.ProductId, t.WarehouseId });
 
+            modelBuilder.Entity<OrderStatus>().ToTable("OrderStatus");
+
             // --------------------------
             // Relationships with custom delete behavior
             // --------------------------

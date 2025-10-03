@@ -12,6 +12,8 @@ namespace inventory_management_system.DTOs.Requests
         public int CustomerId { get; set; }
         [Required]
         public int StatusId { get; set; }
+     
+       
        
         public ICollection<OrderDetailDto> OrderDetails { get; set; } = new List<OrderDetailDto>();
 
@@ -26,6 +28,7 @@ namespace inventory_management_system.DTOs.Requests
                 OrderDetails = this.OrderDetails.Select(od => new OrderDetail
                 {
                     ProductId = od.ProductId,
+                    WarehouseId =od.WarehouseId,
                     Quantity = od.Quantity,
                     UnitPrice = od.UnitPrice
                 }).ToList()

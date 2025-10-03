@@ -5,7 +5,6 @@ using inventory_management_system.Exceptions;
 using inventory_management_system.Services.Implementations;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace inventory_management_system.Controllers

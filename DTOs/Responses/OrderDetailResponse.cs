@@ -8,6 +8,7 @@ namespace inventory_management_system.DTOs.Responses
         public int ProductId { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
+        public int WarehouseId { get; set; }
         public string ProductName { get; set; } = null!;
         // Maps the entity model to this DTO
         public static OrderDetailResponse MappedOrderDetailResponse(OrderDetail orderDetail)
@@ -16,6 +17,7 @@ namespace inventory_management_system.DTOs.Responses
             {
                 OrderDetailId = orderDetail.OrderDetailId,
                 ProductId = orderDetail.ProductId,
+                WarehouseId = orderDetail.WarehouseId,
                 Quantity = orderDetail.Quantity,
                 UnitPrice = orderDetail.UnitPrice,
                 ProductName = orderDetail.Product?.Name ?? String.Empty

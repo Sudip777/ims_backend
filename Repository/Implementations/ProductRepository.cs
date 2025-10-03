@@ -5,7 +5,6 @@ using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using static inventory_management_system.Constants.BusinessConstants;
 
 namespace inventory_management_system.Repository.Implementations
 {
