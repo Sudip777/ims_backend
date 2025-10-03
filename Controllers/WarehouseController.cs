@@ -1,6 +1,8 @@
-﻿using inventory_management_system.Constants;
+﻿using FluentValidation;
+using inventory_management_system.Constants;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.Exceptions;
+using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using static inventory_management_system.Constants.ApiRoutes;
@@ -13,9 +15,12 @@ namespace inventory_management_system.Controllers
     {
         private readonly IWarehouseService _warehouseService;
         private readonly ILogger<WarehouseController> _logger;
-        public WarehouseController(IWarehouseService warehouseService)
+        private readonly IValidator<WarehouseDto> _validator;
+
+        public WarehouseController(IWarehouseService warehouseService, IValidator<WarehouseDto> validator)
         {
             _warehouseService = warehouseService;
+            _validator = validator;
         }
         [HttpGet]
         public  async Task<IActionResult> GetAllWarehouses()
@@ -40,7 +45,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(exception, "Error occurred while retrieving warehouses.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    ExceptionHandler.ErrorHandler.HandleException(exception, HttpContext));
+                    ExceptionHandler.HandleException(exception, HttpContext));
             }
         }
 
@@ -66,13 +71,19 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(exception, "Error Occurred While Retrieving Warehouse");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    ExceptionHandler.ErrorHandler.HandleException(exception, HttpContext));
+                    ExceptionHandler.HandleException(exception, HttpContext));
             }
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateWarehouse([FromBody] WarehouseDto dto)
         {
+            var result = await _validator.ValidateAsync(dto);
+            if (!result.IsValid)
+            {
+                return this.ValidationProblem(result);
+
+            }
             try
             {
                 var response = await _warehouseService.CreateWarehouseAsync(dto);
@@ -91,13 +102,19 @@ namespace inventory_management_system.Controllers
             catch(Exception ex)
             {
                  return StatusCode(StatusCodes.Status500InternalServerError,
-                  ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                  ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
         [HttpPut(ApiRoutes.Warehouses.ById)]
         public async Task<IActionResult> UpdateWarehouse([FromBody] WarehouseDto  dto, int id)
         {
+            var result = await _validator.ValidateAsync(dto);
+            if (!result.IsValid)
+            {
+                return this.ValidationProblem(result);
+
+            }
             try
             {
                 var response = await _warehouseService.UpdateWarehouseAsync(dto, id);
@@ -120,7 +137,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while updating an warehouse.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
 
             }
 

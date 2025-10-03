@@ -15,7 +15,6 @@ namespace inventory_management_system.DTOs.Requests
 
         public required string Email { get; set; }
         [Required]
-        [PhoneNumberValidation]
         public required string Phone { get; set; }
         [MinLength(4, ErrorMessage = "Address must be at least 4 characters long")]
         [MaxLength(50, ErrorMessage = "Address cannot exceed 25 characters long")]

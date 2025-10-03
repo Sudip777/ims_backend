@@ -33,29 +33,16 @@ namespace inventory_management_system.Services.Implementations
                 ? order.PurchaseOrderDetails.Sum(d => d.Quantity * d.UnitPrice)
                 : 0m;
 
-            // Validate product IDs before save
-            var productIds = order.PurchaseOrderDetails.Select(d => d.ProductId).ToList();
-            var validProductIds = await _context.Products
-                .Where(p => productIds.Contains(p.ProductId))
-                .Select(p => p.ProductId)
-                .ToListAsync();
-            var invalidIds = productIds.Except(validProductIds).ToList();
-            if (invalidIds.Any())
-                throw new Exception($"Invalid ProductIds: {string.Join(",", invalidIds)}");
-
             var createdPurchaseOrder = await _purchaseOrderRepository.AddPurchaseOrderAsync(order);
-
-            // Now safe to map, because Supplier/Status/Details are loaded
             return PurchaseOrderResponse.MappedPurchaseOrderResponse(createdPurchaseOrder);
         }
 
 
 
-        public Task<IEnumerable<PurchaseOrderResponse>> GetAllPurchaseOrdersAsync()
+        public async Task<IEnumerable<PurchaseOrderResponse>> GetAllPurchaseOrdersAsync()
         {
-            var orders = _context.PurchaseOrders
-                .Include(o => o.PurchaseOrderDetails)
-                .Select(o => new PurchaseOrderResponse
+            var res = await _purchaseOrderRepository.GetAllPurchaseOrderAsync();
+            var orders = res.Select(o => new PurchaseOrderResponse
                 {
                     PurchaseOrderId = o.PurchaseOrderId,
                     SupplierId = o.SupplierId,
@@ -72,7 +59,7 @@ namespace inventory_management_system.Services.Implementations
                         UnitPrice = od.UnitPrice
                     }).ToList()
                 }).AsEnumerable();
-            return Task.FromResult(orders);
+            return orders;
         }
 
         public Task<PurchaseOrderResponse> GetPurchaseOrderByIdAsync(int id)

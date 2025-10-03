@@ -14,7 +14,7 @@ namespace inventory_management_system.Repository.Implementations
             _context = context;
         }
 
-        public async Task<InventoryTransactionHistory> CreateInvenotryTransactionHistoryAsync(InventoryTransactionHistory transaction)
+        public async Task<InventoryTransactionHistory> CreateInventoryTransactionHistoryAsync(InventoryTransactionHistory transaction)
         {
             _context.InventoryTransactions.Add(transaction);
             await _context.SaveChangesAsync();

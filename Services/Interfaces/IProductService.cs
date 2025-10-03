@@ -12,8 +12,7 @@ namespace inventory_management_system.Services.Interfaces
 
         Task<ProductResponse> UpdateProductAsync(int productId, ProductDto dto);
         Task<bool> DeleteProductAsync(int productId);
-        Task ValidateProduct(ProductDto dto, int productId);
-        Task<bool> CheckProductAndCategoryId(int supplierId, int categoryId);
+ 
 
 
     }

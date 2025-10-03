@@ -7,7 +7,7 @@ namespace inventory_management_system.Repository.Interfaces
     {
         Task<Supplier> CreateSupplierAsync(Supplier supplier);
         Task<Supplier> UpdateSupplierAsync(SupplierDto supplier, int id);
-        Task<IEnumerable<Supplier>> GetAllSupplierAsync(Supplier supplier);
+        Task<IEnumerable<Supplier>> GetAllSupplierAsync();
         Task<Supplier> GetSupplierByIdAsync(int id);
         Task DeleteSupplierAsync(int id);
     }

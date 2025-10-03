@@ -7,11 +7,10 @@ namespace inventory_management_system.DTOs.Requests
 {
     public class RegisterUserDto
     {
-        [Required]
-        public string? Username { get; set; }
+        public required string Username { get; set; }
 
         [Required]
-        public string? Password { get; set; }
+        public required string Password { get; set; }
 
         [Required]
         public string FullName { get; set; } = null!;
@@ -23,7 +22,7 @@ namespace inventory_management_system.DTOs.Requests
         public required bool IsActive { get; set; } = true;
 
         [Required]
-        public int RoleId { get; set; } // Use only RoleId, not Role string
+        public int RoleId { get; set; }
 
         // Map DTO to User entity
         public User MappedUser()
@@ -34,7 +33,7 @@ namespace inventory_management_system.DTOs.Requests
                 PasswordHash = this.Password,
                 FullName = this.FullName,
                 Email = this.Email,
-                RoleId = this.RoleId, // Assign only the FK
+                RoleId = this.RoleId,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };

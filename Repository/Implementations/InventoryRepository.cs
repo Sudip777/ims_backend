@@ -14,19 +14,9 @@ namespace inventory_management_system.Repository.Implementations
         public InventoryRepository(ApplicationDBContext context) { 
             _context = context;
         }
-        public async Task<IEnumerable<Inventory>> GetAllInventoryAsync(Inventory inventory)
+        public  async Task<IEnumerable<Inventory>> GetAllInventoriesAsync()
         {
-            return (IEnumerable<Inventory>)await _context.Inventories.Include(p => p.Product).Include(p => p.Warehouse)
-                .Select(inventory => new InventoryResponse
-                {
-                    InventoryId = inventory.InventoryId,
-                    ProductId = inventory.ProductId,
-                    WarehouseId = inventory.WarehouseId,
-                    Quantity = inventory.Quantity
-
-
-                })
-                .ToListAsync();
+            return await _context.Inventories.ToListAsync();
         }
 
         public async Task<Inventory?> GetInventoryByIdAsync(int id)
@@ -100,5 +90,6 @@ namespace inventory_management_system.Repository.Implementations
             await _context.SaveChangesAsync();
             return inventory;
         }
+
     }
 }

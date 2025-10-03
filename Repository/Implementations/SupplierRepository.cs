@@ -32,7 +32,7 @@ namespace inventory_management_system.Repository.Implementations
 
       
 
-        public async Task<IEnumerable<Supplier>> GetAllSupplierAsync(Supplier customer)
+        public async Task<IEnumerable<Supplier>> GetAllSupplierAsync()
         {
             return await _context.Suppliers.ToListAsync();
         }

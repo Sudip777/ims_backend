@@ -22,18 +22,7 @@ namespace inventory_management_system.Services.Implementations
         }
         public async Task<ProductSupplierResponse> CreateProductSupplierAsync(ProductSupplierDto dto)
         {
-            // ProductId exists
-            var productExists = await _context.Products
-                .AnyAsync(p => p.ProductId == dto.ProductId && p.IsActive == true);
-            if (!productExists)
-                throw new KeyNotFoundException($"Product with ID {dto.ProductId} does not exist.");
-
-            //SupplierId exists
-            var supplierExists = await _context.Suppliers
-                .AnyAsync(s => s.SupplierId == dto.SupplierId && s.IsActive == true);
-            if (!supplierExists)
-                throw new KeyNotFoundException($"Supplier with ID {dto.SupplierId} does not exist.");
-
+           
             var entity = dto.MappedProductSupplier();
             var res = await _productSupplierRepository.CreateProductSupplierAsync(entity);
 

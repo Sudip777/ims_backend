@@ -11,6 +11,7 @@ namespace inventory_management_system.Repository.Interfaces
         Task<IEnumerable<ProductResponse>> GetAllProductsAsync();     
         Task<Product> UpdateProductAsync(ProductDto product, int id);
         Task<bool> DeleteProductAsync(int id);
+       
 
     }
 }

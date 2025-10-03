@@ -1,7 +1,9 @@
-﻿using inventory_management_system.Constants;
+﻿using FluentValidation;
+using inventory_management_system.Constants;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
+using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +19,13 @@ namespace inventory_management_system.Controllers
     {
         private readonly ILogger<CustomerController> _logger;
         private readonly ICustomerService _customerService;
-        public CustomerController(ICustomerService customerService, ILogger<CustomerController> logger)
+        private readonly IValidator<CustomerDto> _validator;
+
+        public CustomerController(ICustomerService customerService, ILogger<CustomerController> logger, IValidator<CustomerDto> validator)
         {
             _logger = logger;
             _customerService = customerService;
+            _validator = validator;
         }
 
 
@@ -47,7 +52,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while retrieving inventories.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                    ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -75,7 +80,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while retrieving inventories.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                    ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -86,12 +91,11 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateCustomer([FromBody] CustomerDto customerDto)
         {
-            if (!ModelState.IsValid)
+            var result = await _validator.ValidateAsync(customerDto);
+            if (!result.IsValid)
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage);
-                return new BadRequestObjectResult(new { message = "Validation failed", errors = errors });
+                return this.ValidationProblem(result);
+
             }
             try
             {
@@ -111,7 +115,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating an inventory.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -121,12 +125,11 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDto customerDto)
         {
-            if (!ModelState.IsValid)
+            var result = await _validator.ValidateAsync(customerDto);
+            if (!result.IsValid)
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage);
-                return new BadRequestObjectResult(new { message = "Validation failed", errors = errors });
+                return this.ValidationProblem(result);
+
             }
             try
             {
@@ -150,7 +153,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while updating an inventory.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
 
             }
         }

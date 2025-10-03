@@ -1,9 +1,11 @@
 ﻿using Azure;
+using FluentValidation;
 using inventory_management_system.Constants;
 using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
+using inventory_management_system.Extensions;
 using inventory_management_system.Helpers;
 using inventory_management_system.Security;
 using inventory_management_system.Services.Interfaces;
@@ -25,12 +27,15 @@ namespace inventory_management_system.Controllers
         private readonly IConfiguration _configuration;
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
+        private readonly IValidator<RegisterUserDto> _validator;
         public AccountController(
+        IValidator<RegisterUserDto> validator,
         ApplicationDBContext context,
         IConfiguration configuration,
         ILogger<AccountController> logger,
         IUserService userService)
         {
+            _validator = validator;
             _context = context;
             _configuration = configuration;
             _logger = logger;
@@ -89,16 +94,14 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
-            if (!ModelState.IsValid)
+            var result = await _validator.ValidateAsync(dto);
+            if (!result.IsValid)
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage);
+                return this.ValidationProblem(result);
 
-                return BadRequest(new { Message = "Validation failed", Errors = errors });
             }
 
-            try
+          try
             {
                 var userResponse = await _userService.RegisterAsync(dto);
 
@@ -120,7 +123,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating a user.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -233,7 +236,7 @@ namespace inventory_management_system.Controllers
                 _logger.LogError(ex, "Error refreshing token.");
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
-                    ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext)
+                    ExceptionHandler.HandleException(ex, HttpContext)
                 );
             }
         }

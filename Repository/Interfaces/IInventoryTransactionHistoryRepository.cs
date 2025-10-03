@@ -3,9 +3,9 @@ using inventory_management_system.Models;
 
 namespace inventory_management_system.Repository.Interfaces
 {
-    public interface IInventoryTransactionRepository
+    public interface IInventoryTransactionHistoryRepository
     {
-        Task<InventoryTransactionHistory> CreateTransactionHistoryAsync(InventoryTransactionHistory transaction);
-        Task<IEnumerable<InventoryTransactionHistory>> GetInventoryTransactionHistoriesAsync();
+        Task<InventoryTransactionHistory> CreateInventoryTransactionHistoryAsync(InventoryTransactionHistory transaction);
+        Task<IEnumerable<InventoryTransactionHistory>> GetAllInventoryTransactionHistoriesAsync();
     }
 }

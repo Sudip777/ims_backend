@@ -1,9 +1,10 @@
 ﻿using Azure;
+using FluentValidation;
 using inventory_management_system.Constants;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
-using inventory_management_system.Services.Implementations;
+using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,13 @@ namespace inventory_management_system.Controllers
     {
         private readonly IRoleService _roleService;
         private readonly ILogger<RoleController> _logger;
-        public RoleController(IRoleService roleService, ILogger<RoleController> logger)
+        private readonly IValidator<RoleDto> _validator;
+
+        public RoleController(IRoleService roleService, ILogger<RoleController> logger, IValidator<RoleDto> validator)
         {
             _roleService = roleService;
             _logger = logger;
+            _validator = validator;
 
         }
 
@@ -33,15 +37,13 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateRole([FromBody] RoleDto dto)
         {
-
-            if (!ModelState.IsValid)
+            var result = await _validator.ValidateAsync(dto);
+            if (!result.IsValid)
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage);
+                return this.ValidationProblem(result);
 
-                return BadRequest(new { Message = "Validation failed", Errors = errors });
             }
+
             try
             {
                 
@@ -70,7 +72,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating a role.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -105,7 +107,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating a role.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 

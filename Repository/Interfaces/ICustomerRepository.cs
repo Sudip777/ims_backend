@@ -7,7 +7,7 @@ namespace inventory_management_system.Repository.Interfaces
     {
         Task<Customer>  CreateCustomerAsync(Customer customer);
         Task<Customer> UpdateCustomerAsync(CustomerDto customer, int customerId);
-        Task<IEnumerable<Customer>> GetAllInventoryAsync(Customer customer);
+        Task<IEnumerable<Customer>> GetAllCustomersAsync();
         Task<Customer> GetCustomerByIdAsync(int id);
         Task DeleteCustomerAsync(int id);
 

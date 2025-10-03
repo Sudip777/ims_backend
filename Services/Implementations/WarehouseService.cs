@@ -1,8 +1,9 @@
-﻿using inventory_management_system.DTOs.Requests;
+﻿using inventory_management_system.Data;
+using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace inventory_management_system.Services.Implementations
 {
@@ -10,11 +11,13 @@ namespace inventory_management_system.Services.Implementations
     {
         private readonly IWarehouseRepository _warehouseRepository;
         private readonly IUserService _userService;
+        private readonly ApplicationDBContext _context;
 
-        public WarehouseService(IWarehouseRepository warehouseRepository, IUserService userService)
+        public WarehouseService(ApplicationDBContext context, IWarehouseRepository warehouseRepository, IUserService userService)
         {
             _warehouseRepository = warehouseRepository;
             _userService = userService;
+            _context = context;
         }
         public async Task<IEnumerable<WarehouseResponse>> GetAllWarehousesAsync()
         {
@@ -52,7 +55,7 @@ namespace inventory_management_system.Services.Implementations
         {
             var response = dto.MappedWarehouse();
             response.CreatedByUserId = _userService.GetCurrentUserId();
-
+           
             var existingWarehouse = await _warehouseRepository.GetByNameAsync(response.Name);
             if (existingWarehouse != null)
             {
@@ -80,5 +83,6 @@ namespace inventory_management_system.Services.Implementations
 
             return WarehouseResponse.MappedWarehouseResponse(tempData);
         }
+
     }
 }

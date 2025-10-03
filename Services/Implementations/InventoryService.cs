@@ -12,6 +12,8 @@ namespace inventory_management_system.Services.Implementations
 
         private readonly IInventoryRepository _inventoryRepository;
         private readonly ApplicationDBContext _context;
+        private readonly IProductService _productService;
+        private readonly IWarehouseService _warehouseService;
 
         public InventoryService(IInventoryRepository inventoryRepository, ApplicationDBContext context)
         {
@@ -22,6 +24,7 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<InventoryResponse> CreateInventoryAsync(InventoryDto dto)
         {
+            
             var entity = dto.MappedInventory();
             var createdEntity = await _inventoryRepository.CreateInventoryAsync(entity);
             return new InventoryResponse
@@ -39,9 +42,8 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<IEnumerable<InventoryResponse>> GetAllInventoryAsync()
         {
-            return await _context.Inventories
-                .Include(i => i.Product)
-                .Include(i => i.Warehouse)
+            var res = await _inventoryRepository.GetAllInventoriesAsync();
+            return res
                 .Select(i => new InventoryResponse
                 {
                     ProductId = i.ProductId,
@@ -52,7 +54,7 @@ namespace inventory_management_system.Services.Implementations
                     InventoryId = i.InventoryId,
                     ReorderLevel = i.Product != null ? i.Product.ReorderLevel : 0
                 })
-                .ToListAsync();
+                .ToList();
         }
 
         public async Task<InventoryResponse?> GetInventoryByIdAsync(int id)

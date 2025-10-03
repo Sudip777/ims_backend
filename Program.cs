@@ -1,25 +1,25 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using inventory_management_system.Data;
-using inventory_management_system.Exceptions;
-using inventory_management_system.Repository.Implementations;
-using inventory_management_system.Repository.Interfaces;
-using inventory_management_system.Services.Implementations;
-using inventory_management_system.Services.Interfaces;
-using inventory_management_system.Validations;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
+using inventory_management_system.Extensions;
+using inventory_management_system.Middleware;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // -----------------------
 // Add Services
 // -----------------------
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
+    {
+        fv.AutomaticValidationEnabled = false; // for async rule required
+    });
+
+builder.Services.AddValidators(); // Your extension method
+builder.Services.AddApplicationServices(); // DI for services
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
@@ -54,74 +54,13 @@ builder.Services.AddSwaggerGen(option =>
 // -----------------------
 // JWT Authentication
 // -----------------------
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    var key = builder.Configuration["Jwt:Key"];
-    if (string.IsNullOrEmpty(key))
-        throw new ArgumentException("Jwt:Key is not configured in appsettings.json");
-
-    var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = signingKey,
-    };
-});
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 // -----------------------
 // Database Connection
 // -----------------------
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// -----------------------
-// Dependency Injection
-// -----------------------
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IInventoryService, InventoryService>();
-builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
-builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
-builder.Services.AddScoped<ISupplierService, SupplierService>();
-builder.Services.AddScoped<IProductSupplierRepository, ProductSupplierRepository>();
-builder.Services.AddScoped<IProductSupplierService, ProductSupplierService>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
-builder.Services.AddScoped<IWarehouseService, WarehouseService>();
-builder.Services.AddScoped<IInventoryTransactionRepository, InventoryTransactionRepository>();
-builder.Services.AddScoped<IInventoryTransactionService, InventoryTransactionService>();
-builder.Services.AddHttpContextAccessor();
-
-// -----------------------
-// FluentValidation Setup
-// -----------------------
-builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<ProductSupplierValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CategoriesValidator>();
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
 
 // -----------------------
 // Build App
@@ -141,42 +80,12 @@ if (app.Environment.IsDevelopment())
 }
 
 // -----------------------
-// Global Exception Handling
-// -----------------------
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler(errorApp =>
-    {
-        errorApp.Run(async context =>
-        {
-            var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-            if (exception != null)
-            {
-                context.Response.ContentType = "application/json";
-
-                var errorResponse = ExceptionHandler.ErrorHandler.HandleException(exception, context);
-
-                context.Response.StatusCode = errorResponse.Status;
-
-                var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-                logger.LogError(exception, "Unhandled exception caught by global handler.");
-
-                await context.Response.WriteAsJsonAsync(errorResponse);
-            }
-        });
-    });
-}
-else
-{
-    app.UseDeveloperExceptionPage();
-}
-
-// -----------------------
 // Middleware
 // -----------------------
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 
+app.MapControllers();
 app.Run();

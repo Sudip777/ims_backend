@@ -3,7 +3,6 @@ using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace inventory_management_system.Services.Implementations
 {
@@ -19,16 +18,7 @@ namespace inventory_management_system.Services.Implementations
         }
         public async Task<CategoryResponse> CreateCategoryAsync(CategoryDto category)
         {
-            // Validate ParentCategoryId
-            if (category.ParentCategoryId != 0)
-            {
-                var exists = await _context.Categories
-                    .AnyAsync(c => c.CategoryId == category.ParentCategoryId);
-
-                if (!exists)
-                    throw new KeyNotFoundException($"Parent Category {category.ParentCategoryId} does not exist.");
-            }
-
+          
             var entity = category.MappedCategory();
             var createdCategory = await _categoryRepository.CreateCategoryAsync(entity);
             if (createdCategory == null) throw new KeyNotFoundException("No Categories Found.");

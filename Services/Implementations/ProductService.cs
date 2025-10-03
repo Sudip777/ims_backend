@@ -20,18 +20,9 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<ProductResponse> RegisterProductAsync(ProductDto dto)
         {
-           
-
-            var isPresent = CheckProductAndCategoryId(dto.SupplierId, dto.CategoryId.Value);
-            if (await isPresent)
-            {
                 var newProduct = await _productRepository.CreateProductAsync(dto);
                 return newProduct;
-            }
-            else
-            {
-                throw new ArgumentException("Supplier and Category Must be added");
-            }
+           
         }
 
         public Task<ProductResponse> GetProductByIdAsync(int id)
@@ -70,39 +61,7 @@ namespace inventory_management_system.Services.Implementations
             return ProductResponse.MappeddProductResponse(updatedProduct);
         }
 
-        public async Task ValidateProduct(ProductDto dto, int productId)
-        {
-            if (dto.UnitPrice <= dto.CostPrice)
-            {
-                throw new ArgumentException("Cost Price must be greater than UnitPrice.");
-            }
-
-            //MinStock <= ReorderLevel <= MaxStock
-            if (dto.MinStock > dto.ReorderLevel || (dto.MaxStock.HasValue && dto.ReorderLevel > dto.MaxStock.Value))
-            {
-                throw new ArgumentException("ReorderLevel must be between MinStock and MaxStock.");
-            }
-
-            if (!string.IsNullOrEmpty(dto.SKU))
-            {
-                var skuExists = await _context.Products
-                    .AnyAsync(p => p.SKU == dto.SKU && p.ProductId != productId);
-                if (skuExists)
-                {
-                    throw new ArgumentException($"A product with SKU {dto.SKU} already exists.");
-                }
-            }
-        }
-
-        public async Task<bool> CheckProductAndCategoryId(int supplierId, int categoryId)
-        {
-            var supplier = await _context.Suppliers.FindAsync(supplierId);
-            var category = await _context.Categories.FindAsync(categoryId);
-
-            // true if both exist, false otherwise
-            return supplier != null && category != null;
-        }
-
+          
 
     }
 }

@@ -1,11 +1,11 @@
-﻿using inventory_management_system.Constants;
+﻿using FluentValidation;
+using inventory_management_system.Constants;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.Exceptions;
-using inventory_management_system.Services.Implementations;
+using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace inventory_management_system.Controllers
 {
@@ -16,9 +16,13 @@ namespace inventory_management_system.Controllers
     {
         private readonly IProductSupplierService _productSupplierService;
         private readonly ILogger<ProductSupplierController> _logger;
-        public ProductSupplierController(IProductSupplierService productSupplierService)
+        private readonly IValidator<ProductSupplierDto> _validator;
+
+        public ProductSupplierController(IProductSupplierService productSupplierService, IValidator<ProductSupplierDto> validator
+            )
         {
             _productSupplierService = productSupplierService;
+            _validator = validator;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllProductSuppliers()
@@ -44,7 +48,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating a role.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -70,7 +74,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating a role.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -78,6 +82,13 @@ namespace inventory_management_system.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateProductSupplier([FromBody] ProductSupplierDto dto)
         {
+            var result = await _validator.ValidateAsync(dto);
+            if (!result.IsValid)
+            {
+                return this.ValidationProblem(result);
+
+            }
+
             try
             {
                 var res = await _productSupplierService.CreateProductSupplierAsync(dto);
@@ -96,7 +107,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating a role.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 

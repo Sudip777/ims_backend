@@ -9,5 +9,6 @@ namespace inventory_management_system.Services.Interfaces
         Task<WarehouseResponse> GetWarehouseByIdAsync(int id);
         Task<WarehouseResponse> CreateWarehouseAsync(WarehouseDto warehouse);
         Task<WarehouseResponse> UpdateWarehouseAsync(WarehouseDto warehouse, int id);
+      
     }
 }

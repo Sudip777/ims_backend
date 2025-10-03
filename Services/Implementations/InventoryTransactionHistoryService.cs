@@ -17,21 +17,15 @@ namespace inventory_management_system.Services.Implementations
 
         public InventoryTransactionHistoryService(IUserService userService, IInventoryTransactionHistoryRepository inventoryTransactionRepository, ApplicationDBContext context)
         {
-            _userService = userService;
             _inventoryTransactionRepository = inventoryTransactionRepository;
+            _userService = userService;
             _context = context;
-            _context = context;
+           
         }
         public async Task<InventoryTransactionHistoryResponse> CreateInventoryTransactionHistoryAsync(InventoryTransactionHistoryDto transaction)
         {
             var response = transaction.MappedInventoryTransactionHistory();
             response.UserId = _userService.GetCurrentUserId();
-
-            var productExists = await _context.Products.AnyAsync(p => p.ProductId == response.ProductId);
-            if (!productExists) throw new InvalidOperationException($"ProductId {response.ProductId} does not exist.");
-
-            var warehouseExists = await _context.Warehouses.AnyAsync(w => w.WarehouseId == response.WarehouseId);
-            if (!warehouseExists) throw new InvalidOperationException($"WarehouseId {response.WarehouseId} does not exist.");
 
             var userExists = await _context.Users.AnyAsync(u => u.UserId == _userService.GetCurrentUserId());
             if (!userExists) throw new InvalidOperationException($"UserId {_userService.GetCurrentUserId()} does not exist.");
@@ -54,7 +48,7 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<IEnumerable<InventoryTransactionHistoryResponse>> GetAllInventoryTransactionHistoriesAsync()
         {
-            var data = await _inventoryTransactionRepository.GetInventoryTransactionHistoriesAsync();
+            var data = await _inventoryTransactionRepository.GetAllInventoryTransactionHistoriesAsync();
             if (data == null) throw new KeyNotFoundException("No Categories Found.");
 
             return data.Select(res => new InventoryTransactionHistoryResponse

@@ -36,7 +36,7 @@ namespace inventory_management_system.Repository.Implementations
         }
 
 
-        public async Task<IEnumerable<Customer>> GetAllInventoryAsync(Customer customer)
+        public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
         {
             return await _context.Customers.ToListAsync();
         }

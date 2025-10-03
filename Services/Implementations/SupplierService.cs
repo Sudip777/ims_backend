@@ -40,8 +40,8 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<IEnumerable<SupplierResponse>> GetAllSupplierAsync()
         {
-            return await _context.Suppliers
-                .Include(i => i.Products)
+            var res = await _supplierRepository.GetAllSupplierAsync();
+            return  res
                 .Select(i => new SupplierResponse
                 {
                     SupplierId = i.SupplierId,
@@ -53,7 +53,7 @@ namespace inventory_management_system.Services.Implementations
                     CreatedAt = i.CreatedAt,
                     CreatedByUserId = i.CreatedByUserId
                 })
-                .ToListAsync();
+                .ToList();
         }
 
         public async Task<SupplierResponse> GetSupplierByIdAsync(int id)
@@ -108,6 +108,16 @@ namespace inventory_management_system.Services.Implementations
 
             await _supplierRepository.DeleteSupplierAsync(id);
             return true;
+        }
+
+        public async Task EnsureSupplierExistsAsync(int supplierId, bool onlyActive = true)
+        {
+            var query = _context.Suppliers.AsQueryable();
+            if (onlyActive) query = query.Where(p => p.IsActive);
+
+            var exists = await query.AnyAsync(p => p.SupplierId == supplierId);
+            if (!exists)
+                throw new KeyNotFoundException($"Supplier with ID {supplierId} does not exist.");
         }
     }
 }

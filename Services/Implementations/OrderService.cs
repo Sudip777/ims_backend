@@ -1,12 +1,9 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
-using inventory_management_system.Enums;
-using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using OrderStatus = inventory_management_system.Enums.OrderStatus;
 using TransactionType = inventory_management_system.Enums.TransactionType;
 
 
@@ -16,7 +13,7 @@ namespace inventory_management_system.Services.Implementations
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IUserService _userService;
-        private readonly IInventoryRepository _inventoryRepository; // For stock updates
+        private readonly IInventoryRepository _inventoryRepository; 
         private readonly IInventoryTransactionHistoryService _inventoryTransactionService;
         private readonly ApplicationDBContext _context;
 
@@ -35,13 +32,12 @@ namespace inventory_management_system.Services.Implementations
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Map DTO to entity
                 var order = orderDto.MappedOrder();
 
                 if (order.OrderDetails == null || !order.OrderDetails.Any())
                     throw new InvalidOperationException("Order must contain at least one order detail.");
 
-                // Ensure WarehouseId and ProductId are valid (not zero)
+                //  WarehouseId and ProductId are valid
                 foreach (var detail in order.OrderDetails)
                 {
                     if (detail.ProductId <= 0)
@@ -55,7 +51,6 @@ namespace inventory_management_system.Services.Implementations
                 order.TotalAmount = order.OrderDetails.Sum(d => d.Quantity * d.UnitPrice);
                 order.CreatedByUserId = _userService.GetCurrentUserId();
 
-                // Validate products and warehouses exist
                 foreach (var detail in order.OrderDetails)
                 {
                     var product = await _context.Products.FindAsync(detail.ProductId);
@@ -136,11 +131,10 @@ namespace inventory_management_system.Services.Implementations
             return _orderRepository.DeleteOrderAsync(id);
         }
 
-        public Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
+        public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
         {
-           var orders =  _context.Orders
-                .Include(o => o.OrderDetails)
-                .Select(o => new OrderResponse
+            var res = await _orderRepository.GetAllAsync();
+           var orders =  res.Select(o => new OrderResponse
                 {
                     OrderId = o.OrderId,
                     CustomerId = o.CustomerId,
@@ -159,7 +153,7 @@ namespace inventory_management_system.Services.Implementations
                         UnitPrice = od.UnitPrice
                     }).ToList()
                 }).AsEnumerable();
-            return Task.FromResult(orders);
+            return orders;
         }
 
         public async Task<OrderResponse> GetOrderByIdAsync(int id)

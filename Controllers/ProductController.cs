@@ -1,8 +1,9 @@
-﻿using inventory_management_system.Constants;
+﻿using FluentValidation;
+using inventory_management_system.Constants;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
-using inventory_management_system.Models;
+using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,8 @@ namespace inventory_management_system.Controllers
     {
         private readonly IProductService _productService;
         private readonly ILogger<ProductController> _logger;
+        private readonly IValidator<RoleDto> _validator;
+
         public ProductController(IProductService productService, ILogger<ProductController> logger)
         {
             _productService = productService;
@@ -54,7 +57,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating a role.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
 
         }
@@ -84,7 +87,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating a role.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -94,13 +97,13 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateProduct([FromBody] ProductDto dto)
         {
-            if (!ModelState.IsValid)
+            var result = await _validator.ValidateAsync((IValidationContext)dto);
+            if (!result.IsValid)
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage);
-                return BadRequest(new { Message = "Validation failed", Errors = errors });
+                return this.ValidationProblem(result);
+
             }
+
             try
             {
                 var createdProduct = await _productService.RegisterProductAsync(dto);
@@ -119,7 +122,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while creating a role.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -130,15 +133,12 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto dto)
         {
-            if (!ModelState.IsValid)
+            var result = await _validator.ValidateAsync((IValidationContext)dto);
+            if (!result.IsValid)
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage);
-                return BadRequest(new { Message = "Validation failed", Errors = errors });
+                return this.ValidationProblem(result);
+
             }
-            // Validate product business rules
-            await _productService.ValidateProduct(dto, id);
 
             try
             {
@@ -162,7 +162,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while updating a product.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
 
@@ -195,7 +195,7 @@ namespace inventory_management_system.Controllers
             {
                 _logger.LogError(ex, "Error occurred while deleting a product.");
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.ErrorHandler.HandleException(ex, HttpContext));
+                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
     }

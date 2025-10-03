@@ -3,21 +3,20 @@ using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace inventory_management_system.Services.Implementations
 {
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
-        private readonly ApplicationDBContext _context;
         private readonly IUserService _userService;
+        private readonly ApplicationDBContext _context;
 
         public CustomerService(IUserService userService, ICustomerRepository customerRepository, ApplicationDBContext context)
         {
             _customerRepository = customerRepository;
-            _context = context;
             _userService = userService;
+            _context = context;
         }
         public async Task<CustomerResponse> CreateCustomerAsync(CustomerDto customer)
         {
@@ -39,8 +38,9 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<IEnumerable<CustomerResponse>> GetAllCustomerAsync()
         {
-            return await _context.Customers
-                .Include(i => i.Orders)
+            var customers = await _customerRepository.GetAllCustomersAsync();
+            if (customers == null) throw new KeyNotFoundException("No Categories Found.");
+            return  customers
                 .Select(i => new CustomerResponse
                 {
                     CustomerId = i.CustomerId,
@@ -52,7 +52,7 @@ namespace inventory_management_system.Services.Implementations
                     CreatedAt = i.CreatedAt,
                     CreatedByUserId = i.CreatedByUserId
                 })
-                .ToListAsync();
+                .ToList();
         }
 
         public async Task<CustomerResponse> GetCustomerByIdAsync(int id)
@@ -100,10 +100,11 @@ namespace inventory_management_system.Services.Implementations
         {
             var user = await _customerRepository.GetCustomerByIdAsync(id);
             if (user == null)
-                throw new KeyNotFoundException($"User with {id} Not Found");
+                throw new KeyNotFoundException($"Customer with {id} Not Found");
            
             await _customerRepository.DeleteCustomerAsync(id);
             return true;
         }
+        
     }
 }
