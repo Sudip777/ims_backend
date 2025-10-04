@@ -5,7 +5,6 @@ using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
-using inventory_management_system.Services.Implementations;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -89,7 +88,7 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(PurchaseOrderResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(PurchaseOrderDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
@@ -132,7 +131,7 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPut(ApiRoutes.PurchaseOrders.ById)]
-        [ProducesResponseType(typeof(PurchaseOrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PurchaseOrderDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdatePurchaseOrder([FromBody] PurchaseOrderDto dto, int id)

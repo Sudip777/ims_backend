@@ -86,7 +86,7 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(SupplierResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(SupplierDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateSupplier([FromBody] SupplierDto supplierDto)
@@ -121,7 +121,7 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPut(ApiRoutes.Suppliers.ById)]
-        [ProducesResponseType(typeof(SupplierResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SupplierDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateSupplier(int id, [FromBody] SupplierDto supplierDto)

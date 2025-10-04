@@ -30,7 +30,7 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPost]
-        [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto orderDto)
@@ -128,7 +128,6 @@ namespace inventory_management_system.Controllers
         [HttpPut(ApiRoutes.Orders.ById)]
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateOrder([FromBody] OrderDto dto , int id)
         {
             var result = await _validator.ValidateAsync(dto);
@@ -167,9 +166,8 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPatch(ApiRoutes.Orders.ById)]
-        [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
         public async Task<IActionResult> UpdateOrderStatus([FromRoute] int id, [FromBody] int statusId)
         {

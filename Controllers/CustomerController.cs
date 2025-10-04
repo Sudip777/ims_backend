@@ -86,7 +86,7 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPost]
-        [ProducesResponseType(typeof(CustomerResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateCustomer([FromBody] CustomerDto customerDto)
@@ -120,7 +120,7 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPut(ApiRoutes.Customers.ById)]
-        [ProducesResponseType(typeof(CustomerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDto customerDto)

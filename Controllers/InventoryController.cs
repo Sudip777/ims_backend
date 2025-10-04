@@ -63,7 +63,6 @@ namespace inventory_management_system.Controllers
         [HttpGet(ApiRoutes.Inventory.ById)]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetInventoryById(int id)
         {
 
@@ -93,9 +92,8 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPost]
-        [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(InventoryDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateInventory([FromBody] InventoryDto dto)
         {
             var result = await _validator.ValidateAsync(dto);
@@ -128,7 +126,7 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPut(ApiRoutes.Inventory.ById)]
-        [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(InventoryDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateInventory([FromBody] InventoryDto dto, int id)

@@ -5,12 +5,14 @@ using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace inventory_management_system.Controllers
 {
     [ApiController]
     [Route(ApiRoutes.Categories.Base)]
+    [Authorize]
     public class CategoryController:ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -53,7 +55,7 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPost]
-        [ProducesResponseType(typeof(CategoryResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryDto categoryDto)

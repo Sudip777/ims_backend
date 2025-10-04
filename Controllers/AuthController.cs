@@ -88,7 +88,7 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPost(ApiRoutes.Auth.Register)]
-        [AllowAnonymous]
+        [Authorize]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -131,6 +131,7 @@ namespace inventory_management_system.Controllers
 
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -166,7 +167,7 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPost(ApiRoutes.Auth.RefreshToken)]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];

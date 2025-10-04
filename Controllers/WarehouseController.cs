@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using inventory_management_system.Constants;
 using inventory_management_system.DTOs.Requests;
+using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
@@ -23,6 +24,8 @@ namespace inventory_management_system.Controllers
             _validator = validator;
         }
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<SupplierResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public  async Task<IActionResult> GetAllWarehouses()
         {
 
@@ -50,6 +53,8 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpGet(ApiRoutes.Warehouses.ById)]
+        [ProducesResponseType(typeof(IEnumerable<WarehouseResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetWarehouseById(int id)
         {
 
@@ -76,6 +81,9 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(WarehouseDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateWarehouse([FromBody] WarehouseDto dto)
         {
             var result = await _validator.ValidateAsync(dto);
@@ -107,6 +115,8 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPut(ApiRoutes.Warehouses.ById)]
+        [ProducesResponseType(typeof(IEnumerable<SupplierDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateWarehouse([FromBody] WarehouseDto  dto, int id)
         {
             var result = await _validator.ValidateAsync(dto);

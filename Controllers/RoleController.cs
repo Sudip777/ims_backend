@@ -31,8 +31,42 @@ namespace inventory_management_system.Controllers
 
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllRoles()
+        {
+            try
+            {
+                var roles = await _roleService.GetAllRolesAsync();
+                return Ok(new
+                {
+                    message = "Role Fetched Successfully",
+                    result = roles,
+                    response_code = "00"
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "Roles Not Found");
+                return NotFound(ex.Message);
+            }
+
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating a role.");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                   ExceptionHandler.HandleException(ex, HttpContext));
+            }
+        }
+
         [HttpPost]
-        [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(RoleDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateRole([FromBody] RoleDto dto)
@@ -64,41 +98,6 @@ namespace inventory_management_system.Controllers
                 });
 
             }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating a role.");
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   ExceptionHandler.HandleException(ex, HttpContext));
-            }
-        }
-
-
-        [HttpGet]
-        [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetAllRoles()
-        {
-            try
-            {
-                var roles = await _roleService.GetAllRolesAsync();
-                return Ok(new
-                {
-                    message = "Role Fetched Successfully",
-                    result = roles,
-                    response_code = "00"
-                });
-            }
-            catch (KeyNotFoundException ex)
-            {
-                _logger.LogWarning(ex, "Roles Not Found");
-                return NotFound(ex.Message);
-            }
-            
             catch (InvalidOperationException ex)
             {
                 return BadRequest(new { Message = ex.Message });

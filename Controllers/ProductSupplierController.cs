@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using inventory_management_system.Constants;
 using inventory_management_system.DTOs.Requests;
+using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
@@ -25,6 +26,9 @@ namespace inventory_management_system.Controllers
             _validator = validator;
         }
         [HttpGet]
+        [ProducesResponseType(typeof(ProductSupplierResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAllProductSuppliers()
         {
             try
@@ -53,6 +57,8 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpGet(ApiRoutes.ProductSuppliers.ById)]
+        [ProducesResponseType(typeof(ProductSupplierResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProductSupplierById(int id)
         {
             try
@@ -80,6 +86,9 @@ namespace inventory_management_system.Controllers
 
 
         [HttpPost]
+        [ProducesResponseType(typeof(ProductSupplierDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateProductSupplier([FromBody] ProductSupplierDto dto)
         {
             var result = await _validator.ValidateAsync(dto);

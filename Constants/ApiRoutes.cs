@@ -93,6 +93,11 @@
             public const string Base = "api/categories";
             public const string ById = "{id}";
         }
+        public static class InventoryTransactionHistory
+        {
+            public const string Base = "api/inventorytransactionhistories";
+            public const string ById = "{id}";
+        }
 
         public static class Dashboard
         {
