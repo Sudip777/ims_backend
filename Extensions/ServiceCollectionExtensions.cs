@@ -35,6 +35,8 @@ namespace inventory_management_system.Extensions
             services.AddScoped<IWarehouseService, WarehouseService>();
             services.AddScoped<IInventoryTransactionHistoryRepository, InventoryTransactionHistoryRepository>();
             services.AddScoped<IInventoryTransactionHistoryService, InventoryTransactionHistoryService>();
+            services.AddScoped<IDashboardRepository, DashboardRepository>();
+            services.AddScoped<IDashboardService, DashboardService>();
             services.AddHttpContextAccessor();
             return services;
         }

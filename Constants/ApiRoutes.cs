@@ -102,9 +102,11 @@
         public static class Dashboard
         {
             public const string Base = "api/dashboard";
-            public const string Summary = "summary";
-            public const string Sales = "sales";
-            public const string Inventory = "inventory";
+            public const string InventoryOverview = "inventory-overview";
+            public const string InventoryTransactinOverview = "inventory-transaction-overview";
+            public const string Warehouse = "warehouse-overview";
+            public const string Sales = "sales-performance";
+            public const string Summary = "purchase-order-status";
             public const string Orders = "orders";
             public const string Revenue = "revenue";
             public const string TopProducts = "top-products";

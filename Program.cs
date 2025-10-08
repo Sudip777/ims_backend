@@ -5,6 +5,7 @@ using inventory_management_system.Extensions;
 using inventory_management_system.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,42 +13,43 @@ var builder = WebApplication.CreateBuilder(args);
 // Add Services
 // -----------------------
 builder.Services.AddControllers()
-    .AddFluentValidation(fv =>
-    {
-        fv.AutomaticValidationEnabled = false; // for async rule required
-    });
+    .AddFluentValidation(fv => fv.AutomaticValidationEnabled = false);
 
-builder.Services.AddValidators(); // Your extension method
-builder.Services.AddApplicationServices(); // DI for services
+builder.Services.AddValidators();
+builder.Services.AddApplicationServices();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(option =>
+
+// Add OpenAPI generation and inject a Bearer security scheme into the generated doc
+builder.Services.AddOpenApi(options =>
 {
-    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
-
-    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
-        In = ParameterLocation.Header,
-        Description = "Please enter a valid token",
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        Scheme = "Bearer"
-    });
+        document.Components ??= new OpenApiComponents();
 
-    option.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+        document.Components.SecuritySchemes["BearerAuth"] = new OpenApiSecurityScheme
         {
-            new OpenApiSecurityScheme
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Name = "Authorization",
+            Description = "Enter a valid JWT token"
+        };
+
+        // Apply the security requirement globally
+        document.SecurityRequirements.Add(new OpenApiSecurityRequirement
+        {
             {
-                Reference = new OpenApiReference
+                new OpenApiSecurityScheme
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[]{ }
-        }
+                    Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "BearerAuth" }
+                },
+                new string[] {}
+            }
+        });
+
+        return Task.CompletedTask;
     });
 });
 
@@ -67,15 +69,21 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 // -----------------------
 var app = builder.Build();
 
-// -----------------------
-// Swagger
-// -----------------------
+// expose the OpenAPI JSON (e.g. /openapi/v1.json)
+app.MapOpenApi();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    app.MapScalarApiReference(options =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Demo API v1");
+        options.WithTitle("IMS Api")
+               .WithTheme(ScalarTheme.Default)
+               .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
+               .AddPreferredSecuritySchemes("BearerAuth")
+               .AddHttpAuthentication("BearerAuth", auth =>
+               {
+                   auth.Token = ""; 
+               });
     });
 }
 
