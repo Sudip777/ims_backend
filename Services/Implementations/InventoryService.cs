@@ -39,36 +39,38 @@ namespace inventory_management_system.Services.Implementations
             };
         }
 
-
-        public async Task<IEnumerable<InventoryResponse>> GetAllInventoryAsync()
+        public async Task<PagedResponse<InventoryResponse>> GetAllInventoryAsync(GetAllInventoriesRequest request)
         {
-            var res = await _inventoryRepository.GetAllInventoriesAsync();
-            return res
-                .Select(i => new InventoryResponse
+            // Validate pagination parameters
+            if (request.Page < 1) request.Page = 1;
+            if (request.PageSize < 1 || request.PageSize > 100) request.PageSize = 10;
+            var (inventories, totalCount) = await _inventoryRepository.GetAllInventoriesAsync(request);
+
+            var responses = inventories.Select(InventoryResponse.MappedInventoryResponse).ToList();
+            return new PagedResponse<InventoryResponse>
+            {
+                Data = responses,
+                Meta = new PagedResponse<InventoryResponse>.MetaData
                 {
-                    ProductId = i.ProductId,
-                    ProductName = i.Product != null ? i.Product.Name : string.Empty,
-                    WarehouseId = i.WarehouseId,
-                    WarehouseName = i.Warehouse != null ? i.Warehouse.Name : string.Empty,
-                    Quantity = i.Quantity,
-                    InventoryId = i.InventoryId,
-                    ReorderLevel = i.Product != null ? i.Product.ReorderLevel : 0
-                })
-                .ToList();
+                    TotalCount = totalCount,
+                    Page = request.Page,
+                    PageSize = request.PageSize
+                }
+            };
         }
 
         public async Task<InventoryResponse?> GetInventoryByIdAsync(int id)
         {
             if (id <= 0)
             {
-                throw new ArgumentException("Invalid inventory ID");
+                throw new ArgumentException("Invalid Inventory ID");
             }
 
             var inventoryData = await _inventoryRepository.GetInventoryByIdAsync(id);
 
             if (inventoryData == null)
             {
-                throw new KeyNotFoundException($"Inventory with ID {id} not found.");
+                throw new KeyNotFoundException($"Inventory with ID {id} Not Found.");
             }
 
             return new InventoryResponse

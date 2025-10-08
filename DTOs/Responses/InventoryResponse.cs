@@ -12,11 +12,8 @@ namespace inventory_management_system.DTOs.Responses
         public string WarehouseName { get; set; } = null!;
         public int ReorderLevel { get; set; }
 
-
-
         public static InventoryResponse MappedInventoryResponse(Inventory inventory)
         {
-
             return new InventoryResponse
             {
                 InventoryId = inventory.InventoryId,

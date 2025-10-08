@@ -1,6 +1,5 @@
 ﻿using inventory_management_system.Models;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace inventory_management_system.DTOs.Requests
 {

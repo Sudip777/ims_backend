@@ -4,7 +4,6 @@ using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
-using inventory_management_system.Models;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,16 +33,22 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetAllInventories()
+        public async Task<IActionResult> GetAllInventories([FromQuery] GetAllInventoriesRequest request)
         {
             try
             {
-                var inventories = await _inventoryService.GetAllInventoryAsync();
-
+                var inventories = await _inventoryService.GetAllInventoryAsync(request);
+                if (inventories.Data == null || !inventories.Data.Any())
+                {
+                    return NotFound(new
+                    {
+                        message = "No Inventories Found.",
+                    });
+                }
                 return Ok(new
                 {
-                    message = "Inventories retrieved successfully",
-                    result = inventories,
+                    message = "Inventories Retrieved Successfully.",
+                    result = new { data = inventories.Data, meta = inventories.Meta },
                     response_code = "00"
                 });
             }
@@ -59,21 +64,18 @@ namespace inventory_management_system.Controllers
             }
         }
 
-
         [HttpGet(ApiRoutes.Inventory.ById)]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetInventoryById(int id)
         {
-
-           
             try
             {
                 var data = await _inventoryService.GetInventoryByIdAsync(id);
 
                 return Ok(new
                 {
-                    message = "Inventory retrieved successfully",
+                    message = "Inventory Retrieved Successfully.",
                     result = data,
                     response_code = "00"
                 });
@@ -108,7 +110,7 @@ namespace inventory_management_system.Controllers
                 var createdInventory = await _inventoryService.CreateInventoryAsync(dto);
                 return Ok(new
                 {
-                    message = "Inventory Created Successfully",
+                    message = "Inventory Created Successfully.",
                     result = createdInventory,
                     response_code = "00"
                 });
@@ -149,7 +151,7 @@ namespace inventory_management_system.Controllers
                 var updatedInventory = await _inventoryService.UpdateInventoryAsync(dto, id);
                 return Ok(new
                 {
-                    message = "Inventory Updated Successfully",
+                    message = "Inventory Updated Successfully.",
                     result = updatedInventory,
                     response_code = "00"
                 });
@@ -182,7 +184,7 @@ namespace inventory_management_system.Controllers
                 var lowStockItems = await _inventoryService.GetLowStocks() ?? new List<InventoryResponse>(); ;
                 return Ok(new
                 {
-                    message = "Low stock items retrieved successfully",
+                    message = "Low Stock Items Retrieved Successfully.",
                     result = lowStockItems,
                     response_code = "00"
                 });

@@ -1,6 +1,5 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
-using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +13,37 @@ namespace inventory_management_system.Repository.Implementations
         public InventoryRepository(ApplicationDBContext context) { 
             _context = context;
         }
-        public  async Task<IEnumerable<Inventory>> GetAllInventoriesAsync()
+        public async Task<(IEnumerable<Inventory> inventories, int totalCount)> GetAllInventoriesAsync(
+                GetAllInventoriesRequest request)
         {
-            return await _context.Inventories.ToListAsync();
+            var query = _context.Inventories
+                .Include(i => i.Product)
+                .Include(i => i.Warehouse)
+                .AsQueryable();
+
+            // Filtering
+            if (request.InventoryId.HasValue)
+                query = query.Where(i => i.InventoryId == request.InventoryId.Value);
+
+            if (request.ProductId.HasValue)
+                query = query.Where(i => i.ProductId == request.ProductId.Value);
+
+            if (request.WarehouseId.HasValue)
+                query = query.Where(i => i.WarehouseId == request.WarehouseId.Value);
+
+            // Total count
+            var totalCount = await query.CountAsync();
+
+            // sorting and pagination
+            var inventories = await query
+                .OrderBy(i => i.InventoryId)
+                .ThenBy(i => i.ProductId)
+                .ThenBy(i => i.WarehouseId)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync();
+
+            return (inventories, totalCount);
         }
 
         public async Task<Inventory?> GetInventoryByIdAsync(int id)
@@ -41,7 +68,6 @@ namespace inventory_management_system.Repository.Implementations
             return updatedInventory;
         }
 
-
         public async Task<Inventory> CreateInventoryAsync(Inventory entity)
         {
             // Validate Product
@@ -61,7 +87,7 @@ namespace inventory_management_system.Repository.Implementations
             _context.Inventories.Add(entity);
             await _context.SaveChangesAsync();
 
-            // Reload with navigation properties
+            // Navigation properties
             return await _context.Inventories
                 .Include(i => i.Product)
                 .Include(i => i.Warehouse)
