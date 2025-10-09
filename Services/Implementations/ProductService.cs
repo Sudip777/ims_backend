@@ -1,6 +1,8 @@
-﻿using inventory_management_system.Data;
+﻿using Azure.Core;
+using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
+using inventory_management_system.Repository.Implementations;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -33,9 +35,24 @@ namespace inventory_management_system.Services.Implementations
             return _productRepository.GetProductByIdAsync(id);
         }
 
-        public Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
+        public async Task<PagedResponse<ProductResponse>> GetAllProductsAsync(GetAllProductsRequest req)
         {
-            return _productRepository.GetAllProductsAsync();
+            // Validate pagination parameters
+            if (req.Page < 1) req.Page = 1;
+            if (req.PageSize < 1 || req.PageSize > 100) req.PageSize = 10;
+            var (products, totalCount) = await _productRepository.GetAllProductsAsync(req);
+
+            var responses = products.Select(ProductResponse.MappeddProductResponse).ToList();
+            return new PagedResponse<ProductResponse>
+            {
+                Data = responses,
+                Meta = new PagedResponse<ProductResponse>.MetaData
+                {
+                    TotalCount = totalCount,
+                    Page = req.Page,
+                    PageSize = req.PageSize
+                }
+            };
         }
 
         public Task<bool> DeleteProductAsync(int productId)

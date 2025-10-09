@@ -37,26 +37,28 @@ namespace inventory_management_system.Repository.Implementations
                 IsActive = entity.IsActive
             };
         }
-        public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
+        public async Task<(IEnumerable<Product> products, int totalCount)> GetAllProductsAsync(GetAllProductsRequest request)   
         {
-            return await _context.Products.Include(p => p.Supplier).Include(p => p.Category)
-                .Select(r => new ProductResponse
-                {
-                    ProductId= r.ProductId,
-                    Name = r.Name,
-                    SKU = r.SKU,
-                    UnitPrice = r.UnitPrice,
-                    CostPrice = r.CostPrice,
-                    SupplierId = r.SupplierId,
-                    SupplierName = r.Supplier!.Name,    
-                    CategoryId = (int)r.CategoryId,
-                    CategoryName = r.Category!.CategoryName,
-                    ReorderLevel = r.ReorderLevel,
-                    MinStock = r.MinStock,
-                    MaxStock = r.MaxStock,
-                    IsActive = r.IsActive
-                })
+            var query = _context.Products
+               .Include(i => i.Category)
+               .AsQueryable();
+
+            // Filtering
+            if (request.CategoryId.HasValue)
+                query = query.Where(i => i.CategoryId == request.CategoryId.Value);
+
+            // Total count
+            var totalCount = await query.CountAsync();
+
+            // sorting and pagination
+            var products = await query
+                .OrderBy(i => i.CategoryId)
+                .ThenBy(i => i.ProductId)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync();
+
+            return (products, totalCount);
         }
 
         public async Task<ProductResponse> GetProductByIdAsync(int id)

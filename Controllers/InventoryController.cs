@@ -19,8 +19,6 @@ namespace inventory_management_system.Controllers
         private readonly IInventoryService _inventoryService;
         private readonly ILogger<InventoryController> _logger;
         private readonly IValidator<InventoryDto> _validator;
-
-
         public InventoryController(IInventoryService inventoryService, ILogger<InventoryController> logger, IValidator<InventoryDto> validator)
         {
             _inventoryService = inventoryService;

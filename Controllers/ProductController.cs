@@ -67,11 +67,18 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts([FromQuery] GetAllProductsRequest request)
         {
             try
             {
-                var products = await _productService.GetAllProductsAsync();
+                var products = await _productService.GetAllProductsAsync(request);
+                if (products.Data == null || !products.Data.Any())
+                {
+                    return NotFound(new
+                    {
+                        message = "No Products Found.",
+                    });
+                }
                 return Ok(new
                 {
                     message = "Products Fetched Successfully",
