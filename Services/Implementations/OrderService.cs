@@ -131,29 +131,24 @@ namespace inventory_management_system.Services.Implementations
             return _orderRepository.DeleteOrderAsync(id);
         }
 
-        public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
+        public async Task<PagedResponse<OrderResponse>> GetAllOrdersAsync(GetAllOrdersRequest request)
         {
-            var res = await _orderRepository.GetAllAsync();
-           var orders =  res.Select(o => new OrderResponse
+            // Validate pagination parameters
+            if (request.Page < 1) request.Page = 1;
+            if (request.PageSize < 1 || request.PageSize > 100) request.PageSize = 10;
+            var (orders, totalCount) = await _orderRepository.GetAllAsync(request);
+
+            var responses = orders.Select(OrderResponse.MappedOrderResponse).ToList();
+            return new PagedResponse<OrderResponse>
+            {
+                Data = responses,
+                Meta = new PagedResponse<OrderResponse>.MetaData
                 {
-                    OrderId = o.OrderId,
-                    CustomerId = o.CustomerId,
-                    CustomerName = o.Customer.Name,
-                    OrderDate = o.OrderDate,
-                    StatusId = o.StatusId,
-                    StatusName = o.Status.Name,
-                    TotalAmount = o.TotalAmount,
-                    CreatedByUserId = o.CreatedByUserId,
-                    OrderDetails = o.OrderDetails.Select(od => new OrderDetailResponse
-                    {
-                        OrderDetailId = od.OrderDetailId,
-                        ProductId = od.ProductId,
-                        WarehouseId = od.WarehouseId,
-                        Quantity = od.Quantity,
-                        UnitPrice = od.UnitPrice
-                    }).ToList()
-                }).AsEnumerable();
-            return orders;
+                    TotalCount = totalCount,
+                    Page = request.Page,
+                    PageSize = request.PageSize
+                }
+            };
         }
 
         public async Task<OrderResponse> GetOrderByIdAsync(int id)

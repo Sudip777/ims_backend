@@ -6,7 +6,7 @@ namespace inventory_management_system.Repository.Interfaces
     public interface IOrderRepository
     {
         Task<Order> GetByIdAsync(int id);
-        Task<IEnumerable<Order>> GetAllAsync();
+        Task<(IEnumerable<Order> orders, int totalCount)> GetAllAsync(GetAllOrdersRequest req);
         Task<Order> AddAsync(Order order);
         Task<Order> UpdateOrderAsync(OrderDto order, int id);
         Task<bool> DeleteOrderAsync(int id);

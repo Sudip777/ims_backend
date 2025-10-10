@@ -23,11 +23,33 @@ namespace inventory_management_system.Repository.Implementations
 
         }
 
-        public async Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderAsync()
+        public async Task<(IEnumerable<PurchaseOrder> purchaseOrders, int totalCount)> GetAllPurchaseOrderAsync(GetAllPurchaseOrdersRequest req)
         {
-            return await _context.PurchaseOrders.Include(p => p.Supplier)
-            .Include(p => p.Status)
-            .Include(p => p.PurchaseOrderDetails).ToListAsync();
+
+            var query = _context.PurchaseOrders
+                .Include(i => i.Supplier)
+                .AsQueryable();
+
+            // Filtering
+            if (req.SupplierId.HasValue)
+                query = query.Where(i => i.SupplierId == req.SupplierId.Value);
+
+            if (req.StartDate.HasValue)
+                query = query.Where(i => i.OrderDate >= req.StartDate.Value);
+
+            if (req.EndDate.HasValue)
+                query = query.Where(i => i.OrderDate <= req.EndDate.Value);
+
+            // Total count
+            var totalCount = await query.CountAsync();
+
+            // sorting and pagination
+            var orders = await query
+                .OrderBy(i => i.SupplierId)
+                .Skip((req.Page - 1) * req.PageSize)
+                .Take(req.PageSize)
+                .ToListAsync();
+            return (orders, totalCount);
         }
 
         public async Task<PurchaseOrder> AddPurchaseOrderAsync(PurchaseOrder order)

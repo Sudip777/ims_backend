@@ -10,6 +10,7 @@ namespace inventory_management_system.DTOs.Responses
         public int StatusId { get; set; }
         public string SupplierName { get; set; } = String.Empty;
         public string StatusName { get; set; } = String.Empty;
+        public required DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
         public decimal TotalAmount { get; set; }
         public int CreatedByUserId { get; set; }
@@ -26,6 +27,7 @@ namespace inventory_management_system.DTOs.Responses
                 StatusId = od.StatusId,
                 StatusName = od.Status?.Name ?? string.Empty,
                 TotalAmount = od.TotalAmount,
+                OrderDate = od.OrderDate,
                 CreatedByUserId = od.CreatedByUserId,
                 PurchaseOrderDetails = od.PurchaseOrderDetails?
                     .Select(temp => PurchaseOrderDetailResponse.MappedPurchaseOrderDetailResponse(temp))

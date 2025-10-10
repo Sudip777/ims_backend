@@ -29,7 +29,7 @@ namespace inventory_management_system.DTOs.Responses
                 CreatedByUserId = orderEntity.CreatedByUserId,
                 OrderDetails = orderEntity.OrderDetails
                                      .Select(od => OrderDetailResponse.MappedOrderDetailResponse(od))
-                                     .ToList()
+                                     .ToList() ?? new List<OrderDetailResponse>()
             };
         }
 

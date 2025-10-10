@@ -6,7 +6,7 @@ namespace inventory_management_system.Repository.Interfaces
     public interface IPurchaseOrderRepository
     {
         Task<PurchaseOrder> GetPurchaseOrderByIdAsync(int id);
-        Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderAsync();
+        Task<(IEnumerable<PurchaseOrder> purchaseOrders, int totalCount)> GetAllPurchaseOrderAsync(GetAllPurchaseOrdersRequest req);
         Task<PurchaseOrder> AddPurchaseOrderAsync(PurchaseOrder order);
         Task<PurchaseOrder> UpdatePurchaseOrderAsync(PurchaseOrderDto order, int id);
         //Task<bool> DeletePurchaseOrderAsync(int id);

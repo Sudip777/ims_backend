@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace inventory_management_system.Validations
 {
-    public class OrderValidator : AbstractValidator<ProductDto>
+    public class OrderValidator : AbstractValidator<OrderDto>
     {
         private readonly ApplicationDBContext _context;
 
@@ -13,49 +13,64 @@ namespace inventory_management_system.Validations
         {
             _context = context;
 
-            RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Product name is required.").WithErrorCode("ERR_PRODUCTNAME_REQUIRED")
-                .MaximumLength(200).WithMessage("Product name cannot exceed 200 characters.").WithErrorCode("ERR_NAME_INVALID");
+            
+            // Validate Order-level fields
 
-            RuleFor(x => x.SKU)
-                .MaximumLength(50).WithMessage("SKU cannot exceed 50 characters.").WithErrorCode("ERR_SKU_INVALID")
-                .MustAsync(async (sku, ct) =>
-                {
-                    if (string.IsNullOrEmpty(sku)) return true; // allow empty
-                    return !await _context.Products.AnyAsync(p => p.SKU == sku, ct);
-                })
-                .WithMessage(sku => $"A product with SKU already exists.").WithErrorCode("ERR_SKU_INVALID");
+            RuleFor(x => x.CustomerId)
+                .GreaterThan(0)
+                .WithMessage("CustomerId is required.")
+                .WithErrorCode("ERR_CUSTOMERID_REQUIRED")
+                .MustAsync(async (id, ct) =>
+                    await _context.Customers.AnyAsync(c => c.CustomerId == id, ct))
+                .WithMessage("Customer does not exist.")
+                .WithErrorCode("ERR_CUSTOMERID_INVALID");
 
+            RuleFor(x => x.StatusId)
+                .GreaterThan(0)
+                .WithMessage("StatusId is required.")
+                .WithErrorCode("ERR_STATUSID_REQUIRED")
+                .MustAsync(async (id, ct) =>
+                    await _context.OrderStatuses.AnyAsync(s => s.StatusId == id, ct))
+                .WithMessage("Invalid order status.")
+                .WithErrorCode("ERR_STATUSID_INVALID");
 
-            RuleFor(x => x)
-                .Must(x => x.UnitPrice > x.CostPrice)
-                .WithMessage("UnitPrice must be greater than CostPrice.").WithErrorCode("ERR_SUPPLIERID_INVALID");
+            RuleFor(x => x.OrderDetails)
+                .NotEmpty()
+                .WithMessage("At least one order detail is required.")
+                .WithErrorCode("ERR_ORDERDETAILS_REQUIRED");
 
-            RuleFor(x => x.ReorderLevel)
-                .InclusiveBetween(1, 10)
-                .WithMessage("ReorderLevel must be between 1 (severe requirement) and 10 (low requirement).").WithErrorCode("ERR_REORDERLEVEL_INVALID");
+            // Validate nested OrderDetails
+         
+            RuleForEach(x => x.OrderDetails).ChildRules(details =>
+            {
+                details.RuleFor(d => d.ProductId)
+                    .GreaterThan(0)
+                    .WithMessage("ProductId is required.")
+                    .WithErrorCode("ERR_PRODUCTID_REQUIRED")
+                    .MustAsync(async (id, ct) =>
+                        await _context.Products.AnyAsync(p => p.ProductId == id && p.IsActive, ct))
+                    .WithMessage("Product does not exist or is inactive.")
+                    .WithErrorCode("ERR_PRODUCTID_INVALID");
 
-            RuleFor(x => x.MinStock)
-                .InclusiveBetween(0, 10000)
-                .WithMessage("MinStock must be between 0 and 10,000.").WithErrorCode("ERR_MINSTOCK_INVALID");
+                details.RuleFor(d => d.WarehouseId)
+                    .GreaterThan(0)
+                    .WithMessage("WarehouseId is required.")
+                    .WithErrorCode("ERR_WAREHOUSEID_REQUIRED")
+                    .MustAsync(async (id, ct) =>
+                        await _context.Warehouses.AnyAsync(w => w.WarehouseId == id, ct))
+                    .WithMessage("Warehouse does not exist.")
+                    .WithErrorCode("ERR_WAREHOUSEID_INVALID");
 
-            RuleFor(x => x.MaxStock)
-                .GreaterThanOrEqualTo(x => x.MinStock)
-                .WithMessage("MaxStock must be greater than or equal to MinStock.").WithErrorCode("ERR_MAXSTOCK_INVALID");
+                details.RuleFor(d => d.Quantity)
+                    .GreaterThan(0)
+                    .WithMessage("Quantity must be greater than zero.")
+                    .WithErrorCode("ERR_QUANTITY_INVALID");
 
-            RuleFor(x => x.IsActive)
-                .Equal(true)
-                .WithMessage("Product must be active when creating.").WithErrorCode("ERR_STATUS_INVALID");
-
-            RuleFor(x => x.SupplierId)
-                .GreaterThan(0).WithMessage("SupplierId is required.").WithErrorCode("ERR_SUPPLIERID_REQUIRED")
-                .MustAsync(async (id, ct) => await _context.Suppliers.AnyAsync(s => s.SupplierId == id && s.IsActive, ct))
-                .WithMessage(id => $"Supplier  does not exist or is inactive.").WithErrorCode("ERR_SUPPLIERID_INVALID");
-
-            RuleFor(x => x.CategoryId)
-                .GreaterThan(0).WithMessage("CategoryId is required.").WithErrorCode("ERR_CATEGORYID_REQUIRED")
-                .MustAsync(async (id, ct) => await _context.Categories.AnyAsync(c => c.CategoryId == id, ct))
-                .WithMessage(id => $"Category  does not exist.").WithErrorCode("ERR_CATEGORYID_INVALID");
+                details.RuleFor(d => d.UnitPrice)
+                    .GreaterThan(0)
+                    .WithMessage("Unit price must be greater than zero.")
+                    .WithErrorCode("ERR_UNITPRICE_INVALID");
+            });
         }
     }
 }

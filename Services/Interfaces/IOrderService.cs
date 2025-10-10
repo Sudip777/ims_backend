@@ -7,7 +7,7 @@ namespace inventory_management_system.Services.Interfaces
     {
         Task<OrderResponse> CreateOrderAsync(OrderDto orderDto);
         Task<OrderResponse> GetOrderByIdAsync(int id);
-        Task<IEnumerable<OrderResponse>> GetAllOrdersAsync();
+        Task<PagedResponse<OrderResponse>> GetAllOrdersAsync(GetAllOrdersRequest request);
         Task<OrderResponse> UpdateOrderAsync( OrderDto orderDto, int id);
         Task<bool> DeleteOrderAsync(int id);
         Task<OrderResponse> UpdateOrderStatusAsync(int id, int newStatusId);

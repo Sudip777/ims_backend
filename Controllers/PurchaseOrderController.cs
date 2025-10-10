@@ -34,13 +34,16 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(typeof(PurchaseOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetAllPurchaseOrders()
+        public async Task<IActionResult> GetAllPurchaseOrders([FromQuery] GetAllPurchaseOrdersRequest req)
         {
-            var response = await _purchaseOrderService.GetAllPurchaseOrdersAsync();
+            var response = await _purchaseOrderService.GetAllPurchaseOrdersAsync(req);
 
-            if (response == null || !response.Any())
+            if (response.Data == null || !response.Data.Any())
             {
-                return NotFound(Array.Empty<object>());
+                return NotFound(new
+                {
+                    message = "No Purchase Orders Found.",
+                });
             }
 
             return Ok(new

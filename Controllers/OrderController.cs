@@ -19,8 +19,6 @@ namespace inventory_management_system.Controllers
         private readonly IOrderService _orderService;
         private readonly IValidator<OrderDto> _validator;
 
-
-
         public OrderController(ILogger<OrderController> logger, IOrderService orderService, IValidator<OrderDto> validator)
         {
             _logger = logger;
@@ -41,7 +39,6 @@ namespace inventory_management_system.Controllers
                 return this.ValidationProblem(result);
 
             }
-
             try
             {
                 var createdOrder = await _orderService.CreateOrderAsync(orderDto);
@@ -69,15 +66,23 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetAllOrders()
+        public async Task<IActionResult> GetAllOrders([FromQuery] GetAllOrdersRequest request)
         {
             try
             {
-                var data = await _orderService.GetAllOrdersAsync();
+                var orders = await _orderService.GetAllOrdersAsync(request);
+
+                if(orders.Data==null || !orders.Data.Any())
+                {
+                    return NotFound(new
+                    {
+                        message = "No Orders Found.",
+                    });
+                }
                 return Ok(new
                 {
                     message = "Orders Rtrieved Successfully",
-                    result = data,
+                    result = orders,
                     response_code = "00"
                 });
             }
@@ -168,7 +173,6 @@ namespace inventory_management_system.Controllers
         [HttpPatch(ApiRoutes.Orders.ById)]
         [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
         public async Task<IActionResult> UpdateOrderStatus([FromRoute] int id, [FromBody] int statusId)
         {
             try

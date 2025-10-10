@@ -1,7 +1,9 @@
-﻿using inventory_management_system.Data;
+﻿using Azure.Core;
+using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Models;
+using inventory_management_system.Repository.Implementations;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -39,27 +41,25 @@ namespace inventory_management_system.Services.Implementations
 
 
 
-        public async Task<IEnumerable<PurchaseOrderResponse>> GetAllPurchaseOrdersAsync()
+        public async Task<PagedResponse<PurchaseOrderResponse>> GetAllPurchaseOrdersAsync(GetAllPurchaseOrdersRequest request)
         {
-            var res = await _purchaseOrderRepository.GetAllPurchaseOrderAsync();
-            var orders = res.Select(o => new PurchaseOrderResponse
+
+            // Validate pagination parameters
+            if (request.Page < 1) request.Page = 1;
+            if (request.PageSize < 1 || request.PageSize > 100) request.PageSize = 10;
+            var (orders, totalCount) = await _purchaseOrderRepository.GetAllPurchaseOrderAsync(request);
+
+            var responses = orders.Select(PurchaseOrderResponse.MappedPurchaseOrderResponse).ToList();
+            return new PagedResponse<PurchaseOrderResponse>
+            {
+                Data = responses,
+                Meta = new PagedResponse<PurchaseOrderResponse>.MetaData
                 {
-                    PurchaseOrderId = o.PurchaseOrderId,
-                    SupplierId = o.SupplierId,
-                    SupplierName = o.Supplier.Name,
-                    StatusId = o.StatusId,
-                    StatusName = o.Status.Name,
-                    TotalAmount = o.TotalAmount,
-                    CreatedByUserId = o.CreatedByUserId,
-                    PurchaseOrderDetails = o.PurchaseOrderDetails.Select(od => new PurchaseOrderDetailResponse
-                    {
-                        PurchaseOrderDetailId = od.PurchaseOrderDetailId,
-                        ProductId = od.ProductId,
-                        Quantity = od.Quantity,
-                        UnitPrice = od.UnitPrice
-                    }).ToList()
-                }).AsEnumerable();
-            return orders;
+                    TotalCount = totalCount,
+                    Page = request.Page,
+                    PageSize = request.PageSize
+                }
+            };
         }
 
         public Task<PurchaseOrderResponse> GetPurchaseOrderByIdAsync(int id)
@@ -77,6 +77,7 @@ namespace inventory_management_system.Services.Implementations
                     StatusId = o.StatusId,
                     StatusName = o.Status.Name,
                     TotalAmount = o.TotalAmount,
+                    OrderDate = o.OrderDate,
                     CreatedByUserId = o.CreatedByUserId,
                     PurchaseOrderDetails = o.PurchaseOrderDetails.Select(od => new PurchaseOrderDetailResponse
                     {

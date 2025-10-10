@@ -7,7 +7,7 @@ namespace inventory_management_system.Services.Interfaces
     {
         Task<PurchaseOrderResponse> CreatePurchaseOrderAsync(PurchaseOrderDto orderDto);
         Task<PurchaseOrderResponse> GetPurchaseOrderByIdAsync(int id);
-        Task<IEnumerable<PurchaseOrderResponse>> GetAllPurchaseOrdersAsync();
+        Task<PagedResponse<PurchaseOrderResponse>> GetAllPurchaseOrdersAsync(GetAllPurchaseOrdersRequest req);
         Task<PurchaseOrderResponse> UpdatePurchaseOrderAsync(PurchaseOrderDto orderDto, int id);
         Task<PurchaseOrderResponse> UpdateOrderStatusAsync(int id, int newStatusId);
     }

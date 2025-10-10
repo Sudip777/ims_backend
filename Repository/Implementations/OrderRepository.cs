@@ -1,4 +1,5 @@
-﻿using inventory_management_system.Data;
+﻿using Azure.Core;
+using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
@@ -27,11 +28,36 @@ namespace inventory_management_system.Repository.Implementations
 
         }
 
-        public async Task<IEnumerable<Order>> GetAllAsync()
+        public async Task<(IEnumerable<Order> orders, int totalCount)> GetAllAsync(GetAllOrdersRequest req)
         {
-            return await _context.Orders
-                .Include(o => o.OrderDetails)
-                .ToListAsync();
+           
+            var query = _context.Orders
+                .Include(i => i.Customer)
+                .Include(i=>i.OrderDetails)
+                  .ThenInclude(od => od.Product)
+                 .Include(o => o.Status)
+                .AsQueryable();
+
+            // Filtering
+            if (req.CustomerId.HasValue)
+                query = query.Where(i => i.CustomerId == req.CustomerId.Value);
+
+            if (req.StartDate.HasValue)
+                query = query.Where(i => i.OrderDate >= req.StartDate.Value);
+
+            if (req.EndDate.HasValue)
+                query = query.Where(i => i.OrderDate <= req.EndDate.Value);
+
+            // Total count
+            var totalCount = await query.CountAsync();
+
+        // sorting and pagination
+        var orders = await query
+            .OrderBy(i => i.CustomerId)
+            .Skip((req.Page - 1) * req.PageSize)
+            .Take(req.PageSize)
+            .ToListAsync();
+            return (orders, totalCount);
         }
 
         public async Task<Order> AddAsync(Order order)
