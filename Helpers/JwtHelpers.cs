@@ -26,7 +26,7 @@ namespace inventory_management_system.Helpers
                 HttpOnly = true,
                 Secure = false, // Set to true in production for HTTPS
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(1)
+                Expires = DateTime.UtcNow.AddMinutes(60)
             };
 
             response.Cookies.Append("refreshToken", token, cookieOptions);

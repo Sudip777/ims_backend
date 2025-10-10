@@ -23,11 +23,15 @@ namespace inventory_management_system.Data
         public DbSet<InventoryTransactionHistory> InventoryTransactions { get; set; }
         public DbSet<ProductSupplier> ProductSuppliers { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
+        public DbSet<UrlEndpoint> UrlEndpoints { get; set; }
+        public DbSet<Method> Methods { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<Token> Tokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+          
             // --------------------------
             // Unique Indexes
             // --------------------------
@@ -38,6 +42,10 @@ namespace inventory_management_system.Data
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
+
+            modelBuilder.Entity<RolePermission>()
+            .HasIndex(rp => new { rp.RoleId, rp.UrlEndpointId, rp.MethodId })
+            .IsUnique();
 
             modelBuilder.Entity<Product>()
                 .HasIndex(p => p.SKU)

@@ -1,5 +1,4 @@
-﻿using Azure;
-using FluentValidation;
+﻿using FluentValidation;
 using inventory_management_system.Constants;
 using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
@@ -7,10 +6,12 @@ using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
 using inventory_management_system.Helpers;
+using inventory_management_system.Models;
 using inventory_management_system.Security;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -42,8 +43,6 @@ namespace inventory_management_system.Controllers
             _userService = userService;
         }
 
-
-
         [HttpPost(ApiRoutes.Auth.Login)]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto loginDTO)
@@ -58,29 +57,46 @@ namespace inventory_management_system.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
+            var accessToken = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(60),
+                expires: DateTime.UtcNow.AddMinutes(15),
                 signingCredentials: signIn
             );
+
             var refreshToken = new JwtSecurityToken(
                _configuration["Jwt:Issuer"],
                _configuration["Jwt:Audience"],
                claims,
-               expires: DateTime.UtcNow.AddMinutes(15),
+               expires: DateTime.UtcNow.AddMinutes(60),
                signingCredentials: signIn
            );
 
-            var refreshTokenString = new JwtSecurityTokenHandler().WriteToken(refreshToken);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var accessTokenString = tokenHandler.WriteToken(accessToken);
+            var refreshTokenString = tokenHandler.WriteToken(refreshToken);
+
+            // Store refresh token in DB
+            var tokenEntity = new Token
+            {
+                UserId = user.UserId,
+                TokenDetail = refreshTokenString,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = refreshToken.ValidTo,
+                User = user
+            };
+            _context.Tokens.Add(tokenEntity);
+            await _context.SaveChangesAsync();
+
+            //Set secure HTTP-only cookie for refresh token
             JwtHelpers.SetRefreshTokenCookie(Response, refreshTokenString);
 
             return Ok(new
             {
                 result = new
                 {
-                    access_token = new JwtSecurityTokenHandler().WriteToken(token),
+                    access_token = accessTokenString,
                     refresh_token = refreshTokenString
                 }
             });
@@ -98,20 +114,17 @@ namespace inventory_management_system.Controllers
             if (!result.IsValid)
             {
                 return this.ValidationProblem(result);
-
             }
 
           try
             {
                 var userResponse = await _userService.RegisterAsync(dto);
-
                 var response = new
                 {
                     message = "User Added Successfully",
                     result = userResponse,
                     response_code = "00"
                 };
-
                 return Ok(response);
 
             }
@@ -181,7 +194,7 @@ namespace inventory_management_system.Controllers
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidateLifetime = true,
+                    ValidateLifetime = true, //// ensures expired tokens are rejected
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = _configuration["Jwt:Issuer"],
                     ValidAudience = _configuration["Jwt:Audience"],
@@ -200,6 +213,15 @@ namespace inventory_management_system.Controllers
                 if (user == null)
                     return NotFound(new { Message = "User not found" });
 
+                // Check if refresh token exists and is valid in DB
+                var storedToken = await _context.Tokens
+                .FirstOrDefaultAsync(t => t.UserId == userId && t.TokenDetail == refreshToken);
+
+                if (storedToken == null || storedToken.ExpiresAt <= DateTime.UtcNow)
+                    return Unauthorized(new { Message = "Invalid or expired refresh token" });
+                // Remove the old refresh token
+                _context.Tokens.Remove(storedToken);
+
                 //  new access token
                 var claims = JwtHelpers.CreateClaims(user, _configuration);
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -208,7 +230,7 @@ namespace inventory_management_system.Controllers
                     _configuration["Jwt:Issuer"],
                     _configuration["Jwt:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddMinutes(60),
+                    expires: DateTime.UtcNow.AddMinutes(15),
                     signingCredentials: signIn
                 );
 
@@ -216,10 +238,35 @@ namespace inventory_management_system.Controllers
                     _configuration["Jwt:Issuer"],
                     _configuration["Jwt:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddMinutes(15),
+                    expires: DateTime.UtcNow.AddMinutes(60),
                     signingCredentials: signIn
                 );
+
                 var newRefreshTokenString = tokenHandler.WriteToken(newRefreshToken);
+
+                // Save new refresh token in database
+                var tokenEntity = new Token
+                {
+                    UserId = userId,
+                    TokenDetail = newRefreshTokenString,
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAt = newRefreshToken.ValidTo,
+                    User = user
+                };
+
+                _context.Tokens.Add(tokenEntity);
+
+                //On-demand cleanup of expired tokens
+                var expiredTokens = await _context.Tokens
+                    .Where(t => t.ExpiresAt < DateTime.UtcNow)
+                    .ToListAsync();
+
+                if (expiredTokens.Any())
+                    _context.Tokens.RemoveRange(expiredTokens);
+
+                await _context.SaveChangesAsync();
+
+                // Set cookie
                 JwtHelpers.SetRefreshTokenCookie(Response, newRefreshTokenString);
 
                 return Ok(new
@@ -231,6 +278,10 @@ namespace inventory_management_system.Controllers
                     }
                 });
 
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                return Unauthorized(new { Message = "Refresh token expired" });
             }
             catch (Exception ex)
             {
