@@ -46,7 +46,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Error occurred while retrieving warehouses.");
+                _logger.LogError(exception,
+                  $"Unhandled exception while retrieving warehouses, by user {User.Identity?.Name}",
+                  User.Identity?.Name ?? "Anonymous"
+                  );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(exception, HttpContext));
             }
@@ -74,9 +77,12 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Error Occurred While Retrieving Warehouse");
+                _logger.LogError(exception,
+                        $"Unhandled exception while retrieving warehouse of{id}, by user {User.Identity?.Name}",id,
+                         User.Identity?.Name ?? "Anonymous"
+                           ); 
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    ExceptionHandler.HandleException(exception, HttpContext));
+                ExceptionHandler.HandleException(exception, HttpContext));
             }
         }
 
@@ -89,6 +95,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for warehouse creation: Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -109,7 +117,11 @@ namespace inventory_management_system.Controllers
 
             catch(Exception ex)
             {
-                 return StatusCode(StatusCodes.Status500InternalServerError,
+                _logger.LogError(ex,
+               $"Unhandled exception while creating warehouse {dto.Name}, by user {User.Identity?.Name}",dto.Name,
+               User.Identity?.Name ?? "Anonymous"
+               );
+                return StatusCode(StatusCodes.Status500InternalServerError,
                   ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
@@ -122,6 +134,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for warehouse update: Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -145,7 +159,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating an warehouse.");
+                _logger.LogError(ex,
+                 $"Unhandled exception while updating warehouse {dto.Name}, by user {User.Identity?.Name}",dto.Name,
+                 User.Identity?.Name ?? "Anonymous"
+                 );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
 

@@ -50,7 +50,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving inventories.");
+                _logger.LogError(ex,
+                $"Unhandled exception while retrieving customers, by user {User.Identity?.Name}",
+                User.Identity?.Name ?? "Anonymous"
+                );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -78,7 +81,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving inventories.");
+                _logger.LogError(ex,
+                $"Unhandled exception while retrieving customer with {id} by user {User.Identity?.Name}",id,
+                User.Identity?.Name ?? "Anonymous"
+                );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -94,6 +100,9 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(customerDto);
             if (!result.IsValid)
             {
+                _logger.LogWarning($"Validation failed for customer creation: {customerDto.Name}. Errors: {result.Errors.Select(e => e.ErrorMessage)}",
+                   customerDto.Name,
+                   result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -109,11 +118,20 @@ namespace inventory_management_system.Controllers
             }
             catch (InvalidOperationException ex)
             {
+                _logger.LogWarning(ex,
+                   $"Invalid operation while creating customer: {customerDto.Name}, by user {User.Identity?.Name ?? "Anonymous"}",
+                   customerDto.Name,
+                   User.Identity?.Name ?? "Anonymous"
+                 );
                 return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating an inventory.");
+                _logger.LogError(ex,
+                   $"Unhandled exception while creating customer: {customerDto.Name}, by user {User.Identity?.Name}",
+                   customerDto.Name,
+                   User.Identity?.Name ?? "Anonymous"
+                   );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -128,6 +146,9 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(customerDto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for customer update: {Name}. Errors: {@Errors}",
+                  customerDto.Name,
+                  result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -151,7 +172,11 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating an inventory.");
+                _logger.LogError(ex,
+                  $"Unhandled exception while updating customer: {customerDto.Name}, by user {User.Identity?.Name}",
+                  customerDto.Name,
+                  User.Identity?.Name ?? "Anonymous"
+                  );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
 
@@ -195,7 +220,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error deleting user {Id}.", id);
+                _logger.LogError(ex,
+                 $"Unhandled exception while deleting customer, by user {User.Identity?.Name}",
+                 User.Identity?.Name ?? "Anonymous"
+                 );
                 return StatusCode((int)HttpStatusCode.InternalServerError, "An unexpected error occurred.");
             }
         }

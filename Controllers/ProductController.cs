@@ -55,7 +55,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a role.");
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving product of {id}, by user {User.Identity?.Name}",id,
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -92,7 +95,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a role.");
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving products, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -107,6 +113,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync((IValidationContext)dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for product creation: Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -127,7 +135,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a role.");
+                _logger.LogError(ex,
+           $"Unhandled exception while creating product, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -143,6 +154,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync((IValidationContext)dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for product update: Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -167,7 +180,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating a product.");
+                _logger.LogError(ex,
+           $"Unhandled exception while updating product, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -200,7 +216,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while deleting a product.");
+                _logger.LogError(ex,
+           $"Unhandled exception while deleting product, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }

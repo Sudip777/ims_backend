@@ -40,7 +40,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving inventory histiories.");
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving inventories history, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }

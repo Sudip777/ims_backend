@@ -175,10 +175,6 @@ namespace inventory_management_system.Controllers
             });
         }
 
-
-
-
-
         [HttpPost(ApiRoutes.Auth.RefreshToken)]
         [Authorize]
         public async Task<IActionResult> RefreshToken()
@@ -285,7 +281,9 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error refreshing token.");
+                _logger.LogError(ex,
+                     $"Unhandled exception while handling refresh token: by user {User.Identity?.Name}",
+                     User.Identity?.Name ?? "Anonymous");
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext)
@@ -326,7 +324,9 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error deleting user {Id}.", id);
+                _logger.LogError(ex,
+                    $"Unhandled exception while deleting user: by user {User.Identity?.Name}",
+                    User.Identity?.Name ?? "Anonymous");
                 return StatusCode((int)HttpStatusCode.InternalServerError, "An unexpected error occurred.");
             }
         }
@@ -363,7 +363,9 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error updating user {Id}.", id);
+                _logger.LogError(ex,
+                    $"Unhandled exception while updating user: by user {User.Identity?.Name}",
+                    User.Identity?.Name ?? "Anonymous");
                 return StatusCode((int)HttpStatusCode.InternalServerError, "An unexpected error occurred.");
             }
         }
