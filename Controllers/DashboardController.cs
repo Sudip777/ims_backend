@@ -36,7 +36,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving Inventory Overview Data.");
+                _logger.LogError(ex,
+                $"Unhandled exception while retriving inventory overview, by user {User.Identity?.Name}",
+                User.Identity?.Name ?? "Anonymous"
+                );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -61,7 +64,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving sales performance data.");
+                _logger.LogError(ex,
+                $"Unhandled exception while retrieving sales performance dataa, by user {User.Identity?.Name}",
+                User.Identity?.Name ?? "Anonymous"
+                );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -86,7 +92,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving purchase order status data.");
+                _logger.LogError(ex,
+                $"Unhandled exception while retrieving sales purchase data, by user {User.Identity?.Name}",
+                User.Identity?.Name ?? "Anonymous"
+                );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -110,13 +119,16 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a category.");
+                _logger.LogError(ex,
+                $"Unhandled exception while retrieving invenotry transaction overview data, by user {User.Identity?.Name}",
+                User.Identity?.Name ?? "Anonymous"
+                );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
         }
         [HttpGet(ApiRoutes.Dashboard.Warehouse)]
-        public async Task<IActionResult> GetGetWarehouseOverview()
+        public async Task<IActionResult> GetWarehouseOverview()
         {
             try
             {
@@ -134,7 +146,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving warehouse overview data.");
+                _logger.LogError(ex,
+                $"Unhandled exception while retrieving warehouse overview data, by user {User.Identity?.Name}",
+                User.Identity?.Name ?? "Anonymous"
+                );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }

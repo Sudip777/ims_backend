@@ -50,7 +50,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a role.");
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving product suppliers, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -78,7 +81,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a role.");
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving product supplier of {id}, by user {User.Identity?.Name}",id,
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -94,6 +100,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for product supplier creation: Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -114,7 +122,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a role.");
+                _logger.LogError(ex,
+           $"Unhandled exception while creating product supplier, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }

@@ -36,6 +36,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(orderDto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for order creation Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -55,7 +57,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating an inventory.");
+                _logger.LogError(ex,
+           $"Unhandled exception while creating an order, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -92,7 +97,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving orders.");
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving orders, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -121,7 +129,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving the order.");
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving order of {id}, by user {User.Identity?.Name}",id,
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -138,6 +149,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for order update: Errors: {@Errors}",
+                result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -161,7 +174,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating an order.");
+                _logger.LogError(ex,
+           $"Unhandled exception while updating order , by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
 
@@ -196,7 +212,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating an order.");
+                _logger.LogError(ex,
+           $"Unhandled exception while updating order status, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }

@@ -59,7 +59,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a role.");
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving  roles, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -74,6 +77,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for role creation: Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -96,7 +101,7 @@ namespace inventory_management_system.Controllers
                     result = createdRole,
                     response_code = "00"
                 });
-
+                 
             }
             catch (InvalidOperationException ex)
             {
@@ -104,7 +109,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a role.");
+                _logger.LogError(ex,
+                   $"Unhandled exception while creating role {dto.RoleName}, by user {User.Identity?.Name}",dto.RoleName,
+                   User.Identity?.Name ?? "Anonymous"
+                   );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }

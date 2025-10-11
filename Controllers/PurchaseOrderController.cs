@@ -58,7 +58,7 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(typeof(PurchaseOrderResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetAllPurchaseOrders(int id)
+        public async Task<IActionResult> GePurchaseOrderById(int id)
         {
 
             try
@@ -83,7 +83,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving inventories.");
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving purchase order of {id}, by user {User.Identity?.Name}",id,
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -127,7 +130,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating an inventory.");
+                _logger.LogError(ex,
+           $"Unhandled exception while creating purchase order, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -142,6 +148,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for purchase order update: Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -177,7 +185,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating a purchase order.");
+                _logger.LogError(ex,
+           $"Unhandled exception while updating purchase order, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
 
@@ -217,7 +228,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating a purchase order.");
+                _logger.LogError(ex,
+           $"Unhandled exception while updating purchase order status, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }

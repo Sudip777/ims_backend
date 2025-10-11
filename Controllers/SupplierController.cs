@@ -52,7 +52,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving inventories.");
+                _logger.LogError(ex,
+                 $"Unhandled exception while retrieving suppliers, by user {User.Identity?.Name}",
+                 User.Identity?.Name ?? "Anonymous"
+                 );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -79,7 +82,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving supplier data.");
+                _logger.LogError(ex,
+                  $"Unhandled exception while rettieving supplier of {id}, by user {User.Identity?.Name}",id,
+                  User.Identity?.Name ?? "Anonymous"
+                  );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -94,6 +100,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(supplierDto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for supplier creation: Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -114,7 +122,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a supplier.");
+                _logger.LogError(ex,
+              $"Unhandled exception while creating supplier {supplierDto.Name}, by user {User.Identity?.Name}",supplierDto.Name,
+              User.Identity?.Name ?? "Anonymous"
+              );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -129,6 +140,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(supplierDto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for supplier update: Errors: {@Errors}",
+               result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -152,7 +165,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating an inventory.");
+                _logger.LogError(ex,
+                 $"Unhandled exception while updating supplier {supplierDto.Name}, by user {User.Identity?.Name}", supplierDto.Name,
+                 User.Identity?.Name ?? "Anonymous"
+                 );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
 
@@ -193,7 +209,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error deleting supplier {Id}.", id);
+                _logger.LogError(ex,
+                   $"Unhandled exception while deleting supplier, by user {User.Identity?.Name}",
+                   User.Identity?.Name ?? "Anonymous"
+                   );
                 return StatusCode((int)HttpStatusCode.InternalServerError, "An unexpected error occurred.");
             }
         }

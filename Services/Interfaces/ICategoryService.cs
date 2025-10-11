@@ -8,5 +8,6 @@ namespace inventory_management_system.Services.Interfaces
     {
         Task<CategoryResponse> CreateCategoryAsync(CategoryDto category);
         Task<IEnumerable<CategoryResponse>> GetAllCategoriesAsync();
+        Task<CategoryResponse> GetCategoryByIdAsync(int categoryId);
     }
 }

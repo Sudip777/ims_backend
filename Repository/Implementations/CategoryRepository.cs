@@ -27,5 +27,12 @@ namespace inventory_management_system.Repository.Implementations
         {
            return await _context.Categories.ToListAsync();
         }
+
+       
+
+        public async Task<Category> GetCategoryByIdAsync(int categoryId)
+        {
+            return await _context.Categories.FindAsync(categoryId);
+        }
     }
 }

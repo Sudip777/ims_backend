@@ -56,7 +56,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving inventories.");
+                _logger.LogError(ex,
+                $"Unhandled exception while retriving inventories, by user {User.Identity?.Name}",
+                User.Identity?.Name ?? "Anonymous"
+                );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -84,7 +87,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving inventories.");
+                _logger.LogError(ex,
+               $"Unhandled exception while retriving inventory of{id}, by user {User.Identity?.Name}",id,
+               User.Identity?.Name ?? "Anonymous"
+               );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -99,6 +105,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for inventory creation: Errors: {@Errors}",
+                result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -119,7 +127,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating an inventory.");
+                _logger.LogError(ex,
+               $"Unhandled exception while creating inventory, by user {User.Identity?.Name}",
+               User.Identity?.Name ?? "Anonymous"
+               );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
             }
@@ -134,6 +145,8 @@ namespace inventory_management_system.Controllers
             var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
+                _logger.LogWarning("Validation failed for inventory update: Errors: {@Errors}",
+                  result.Errors.Select(e => e.ErrorMessage));
                 return this.ValidationProblem(result);
 
             }
@@ -164,7 +177,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating an inventory.");
+                _logger.LogError(ex,
+             $"Unhandled exception while updaaating inventory, by user {User.Identity?.Name}",
+             User.Identity?.Name ?? "Anonymous"
+             );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                    ExceptionHandler.HandleException(ex, HttpContext));
 
@@ -193,7 +209,10 @@ namespace inventory_management_system.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving low stock items.");
+                _logger.LogError(ex,
+             $"Unhandled exception while retrieving low stocks inventory, by user {User.Identity?.Name}",
+             User.Identity?.Name ?? "Anonymous"
+             );
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     ExceptionHandler.HandleException(ex, HttpContext));
             }

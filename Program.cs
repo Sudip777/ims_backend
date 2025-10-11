@@ -1,13 +1,25 @@
-﻿using FluentValidation;
-using FluentValidation.AspNetCore;
+﻿using FluentValidation.AspNetCore;
 using inventory_management_system.Data;
 using inventory_management_system.Extensions;
 using inventory_management_system.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using Serilog;
+
 
 var builder = WebApplication.CreateBuilder(args);
+// -------------------------
+// Configure Serilog before building the host
+// -------------------------
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration) // <-- Read from appsettings.json
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // -----------------------
 // Add Services
@@ -20,7 +32,6 @@ builder.Services.AddApplicationServices();
 
 builder.Services.AddEndpointsApiExplorer();
 
-// Add OpenAPI generation and inject a Bearer security scheme into the generated doc
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, context, cancellationToken) =>
