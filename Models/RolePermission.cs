@@ -21,15 +21,15 @@ namespace inventory_management_system.Models
         public string? MappedUrl { get; set; } // Nullable for optional alias/versioning
 
         [ForeignKey("RoleId")]
-        [Required]
-        public required Role Role { get; set; }
+       
+        public  Role? Role { get; set; }
 
         [ForeignKey("UrlEndpointId")]
-        [Required]
-        public required UrlEndpoint UrlEndpoint { get; set; }
+       
+        public  UrlEndpoint? UrlEndpoint { get; set; }
 
         [ForeignKey("MethodId")]
-        [Required]
-        public required Method Method { get; set; }
+       
+        public  Method? Method { get; set; }
     }
 }

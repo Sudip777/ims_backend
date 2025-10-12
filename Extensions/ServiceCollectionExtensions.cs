@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using inventory_management_system.Repository.Implementations;
+﻿using inventory_management_system.Repository.Implementations;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Implementations;
 using inventory_management_system.Services.Interfaces;
@@ -37,9 +36,12 @@ namespace inventory_management_system.Extensions
             services.AddScoped<IInventoryTransactionHistoryService, InventoryTransactionHistoryService>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
             services.AddScoped<IDashboardService, DashboardService>();
-           services.AddScoped<ITokenCleanupService, TokenCleanupService>();
-           services.AddHostedService<TokenCleanupService>();
-
+            services.AddScoped<IUrlEndpointRepository, UrlEndpointRepository>();
+            services.AddScoped<IUrlEndpointService, UrlEndpointService>();
+            services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
+            services.AddScoped<IRolePermissionService, RolePermissionService>();
+            services.AddScoped<ITokenCleanupService, TokenCleanupService>();
+            services.AddHostedService<TokenCleanupService>();
             services.AddHttpContextAccessor();
             return services;
         }
