@@ -10,7 +10,7 @@ namespace inventory_management_system.Validations
         {
             RuleFor(c => c.Name)
                 .NotEmpty().WithMessage("Customer name is required.").WithErrorCode("ERR_CUSTOMERNAME_REQUIRED")
-                .MaximumLength(60).WithMessage("Customer name cannot exceed 100 characters.").WithErrorCode("ERR_CUSTOMERNAME_INVALID");
+                .MaximumLength(60).WithMessage("Customer name cannot exceed 60 characters.").WithErrorCode("ERR_CUSTOMERNAME_INVALID");
 
             RuleFor(c => c.Email)
                 .NotEmpty().WithMessage("Email is required.").WithErrorCode("ERR_EMAIL_REQUIRED")
@@ -24,7 +24,7 @@ namespace inventory_management_system.Validations
                     if (string.IsNullOrWhiteSpace(phone))
                         return false;
 
-                    //Exactly 10 digits
+                    //10 digits
                     if (Regex.IsMatch(phone, @"^\d{10}$"))
                         return true;
 

@@ -201,12 +201,7 @@ namespace inventory_management_system.Controllers
                         response_code = "01"
                     });
                 }
-                return  Ok(new
-                {
-                    message = "Customer Deleted Successfully",
-                    result = result,
-                    response_code = "00"
-                });
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {

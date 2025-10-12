@@ -98,6 +98,18 @@
             public const string Base = "api/inventorytransactionhistories";
             public const string ById = "{id}";
         }
+        public static class RolePermissions
+        {
+            public const string Base = "api/role-permission";
+            public const string ById = "{id}";
+
+        }
+
+        public static class UrlEndpoints
+        {
+            public const string Base = "api/url-endpoints";
+            public const string ById = "{id}";
+        }
 
         public static class Dashboard
         {

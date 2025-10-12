@@ -6,7 +6,6 @@ using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using static inventory_management_system.Constants.ApiRoutes;
 
 namespace inventory_management_system.Controllers
 {

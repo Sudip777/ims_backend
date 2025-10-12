@@ -110,7 +110,7 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateProduct([FromBody] ProductDto dto)
         {
-            var result = await _validator.ValidateAsync((IValidationContext)dto);
+            var result = await _validator.ValidateAsync((IValidationContext) dto);
             if (!result.IsValid)
             {
                 _logger.LogWarning("Validation failed for product creation: Errors: {@Errors}",
@@ -122,12 +122,14 @@ namespace inventory_management_system.Controllers
             try
             {
                 var createdProduct = await _productService.RegisterProductAsync(dto);
-                return Ok(new
-                {
-                    message = "Product Created Successfully",
-                    result = createdProduct,
-                    response_code = "00"
-                });
+                return CreatedAtAction(
+                     nameof(GetProductById),
+                     new
+                     {
+                         message = "Product Created Successfully",
+                         result = createdProduct,
+                         response_code = "00"
+                     });
             }
             catch (InvalidOperationException ex)
             {
@@ -200,15 +202,8 @@ namespace inventory_management_system.Controllers
             try
             {
                 var result = await _productService.DeleteProductAsync(id);
-                if (!result)
-                {
-                    return NotFound(new { Message = $"Product with ID {id} not found." });
-                }
-                return Ok(new
-                {
-                    message = "Product Deleted Successfully",
-                  
-                });
+
+                return NoContent();
             }
             catch (InvalidOperationException ex)
             {
