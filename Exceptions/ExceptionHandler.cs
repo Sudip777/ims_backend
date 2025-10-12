@@ -80,7 +80,7 @@ namespace inventory_management_system.Exceptions
 
         private static string GetSafeErrorMessage(Exception exception, int statusCode)
         {
-            //  5xx errors
+            //For 5xx errors
             if (statusCode >= 500)
             {
                 return statusCode switch

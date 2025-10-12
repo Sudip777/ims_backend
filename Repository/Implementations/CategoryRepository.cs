@@ -1,11 +1,7 @@
-﻿using inventory_management_system.Controllers;
-using inventory_management_system.Data;
-using inventory_management_system.DTOs.Responses;
+﻿using inventory_management_system.Data;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
-using static inventory_management_system.Constants.ApiRoutes;
 
 namespace inventory_management_system.Repository.Implementations
 {

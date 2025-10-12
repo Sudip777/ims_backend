@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
-using inventory_management_system.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace inventory_management_system.Validations
