@@ -1,12 +1,8 @@
-﻿using Azure.Core;
-using inventory_management_system.Data;
+﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
-using inventory_management_system.Repository.Implementations;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
-
 namespace inventory_management_system.Services.Implementations
 {
     public class ProductService : IProductService
@@ -22,17 +18,51 @@ namespace inventory_management_system.Services.Implementations
 
         public async Task<ProductResponse> RegisterProductAsync(ProductDto dto)
         {
-                var newProduct = await _productRepository.CreateProductAsync(dto);
-                return newProduct;
-           
+            var response = dto.MappedProduct();
+
+            var newProduct = await _productRepository.CreateProductAsync(response);
+            return new ProductResponse
+            {
+
+                ProductId = newProduct.ProductId,
+                Name = newProduct.Name,
+                SKU = newProduct.SKU,
+                UnitPrice = newProduct.UnitPrice,
+                CostPrice = newProduct.CostPrice,
+                SupplierId = newProduct.SupplierId,
+                SupplierName = newProduct.Supplier?.Name,
+                CategoryId = (int)newProduct.CategoryId,
+                CategoryName = newProduct.Category?.CategoryName,
+                ReorderLevel = newProduct.ReorderLevel,
+                MinStock = newProduct.MinStock,
+                MaxStock = newProduct.MaxStock,
+                IsActive = newProduct.IsActive,
+                CreatedAt = newProduct.CreatedAt,
+            }; 
         }
 
-        public Task<ProductResponse> GetProductByIdAsync(int id)
+        public async Task<ProductResponse> GetProductByIdAsync(int id)
         {
             if (id <= 0)
                 throw new ArgumentException("Product ID must be greater than zero.", nameof(id));
 
-            return _productRepository.GetProductByIdAsync(id);
+            var res = await _productRepository.GetProductByIdAsync(id);
+            return new ProductResponse
+            {
+                ProductId = res.ProductId,
+                Name = res.Name,
+                SKU = res.SKU,
+                UnitPrice = res.UnitPrice,
+                CostPrice = res.CostPrice,
+                SupplierId = res.SupplierId,
+                SupplierName = res.Supplier?.Name,
+                CategoryId = (int)res.CategoryId,
+                CategoryName = res.Category?.CategoryName,
+                ReorderLevel = res.ReorderLevel,
+                MinStock = res.MinStock,
+                MaxStock = res.MaxStock,
+                IsActive = res.IsActive
+            };
         }
 
         public async Task<PagedResponse<ProductResponse>> GetAllProductsAsync(GetAllProductsRequest req)

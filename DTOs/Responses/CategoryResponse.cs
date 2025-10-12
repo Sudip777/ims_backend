@@ -1,6 +1,4 @@
-﻿using inventory_management_system.DTOs.Requests;
-using inventory_management_system.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using inventory_management_system.Models;
 
 namespace inventory_management_system.DTOs.Responses
 {

@@ -55,7 +55,7 @@ namespace inventory_management_system.Repository.Implementations
             if (existingCustomer == null)
                 throw new Exception("Customer not found");
 
-            // Map only the updatable fields from DTO → entity
+            //DTO → entity
             existingCustomer.Name = customer.Name;
             existingCustomer.Email = customer.Email;
             existingCustomer.Phone = customer.Phone;

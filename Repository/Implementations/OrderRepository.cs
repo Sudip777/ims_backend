@@ -84,8 +84,6 @@ namespace inventory_management_system.Repository.Implementations
             return createdOrder!;
         }
 
-
-
         public async Task<Order> UpdateOrderAsync(OrderDto orderDto, int id)
         {
             var order = await _context.Orders
@@ -100,10 +98,9 @@ namespace inventory_management_system.Repository.Implementations
             order.CustomerId = orderDto.CustomerId;
             order.OrderDate = DateTime.UtcNow;
 
-            // Remove existing details
             _context.OrderDetails.RemoveRange(order.OrderDetails);
 
-            // Add new details
+            // Add
             order.OrderDetails = orderDto.OrderDetails.Select(od => new OrderDetail
             {
                 ProductId = od.ProductId,

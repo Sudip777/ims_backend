@@ -107,22 +107,5 @@ namespace inventory_management_system.Repository.Implementations
 
             return order;
         }
-
-
-
-        //public async Task<bool> DeletePurchaseOrderAsync(int id)
-        //{
-        //    var order = await GetPurchaseOrderByIdAsync(id);
-        //    if (order != null)
-        //    {
-        //        _context.PurchaseOrders.Remove(order);
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    return true;
-        //}
-
-
-
-
     }
 }
