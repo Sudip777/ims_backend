@@ -8,7 +8,7 @@ namespace inventory_management_system.Extensions
         public static IServiceCollection AddValidators(this IServiceCollection services)
         {
           
-            services.AddValidatorsFromAssemblyContaining<ProductSupplierValidator>(); 
+            services.AddValidatorsFromAssemblyContaining<ProductSupplierValidator>();
             return services;
            
         }

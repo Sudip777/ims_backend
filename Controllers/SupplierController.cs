@@ -183,19 +183,7 @@ namespace inventory_management_system.Controllers
             try
             {
                 var result = await _supplierService.DeleteSupplierAsync(id);
-                if (!result)
-                {
-                    return new NotFoundObjectResult(new
-                    {
-                        message = $"Supplier with ID {id} not found.",
-                        
-                    });
-                }
-                return Ok(new
-                {
-                    message = "Supplier Deleted Successfully",
-
-                });
+                return NoContent();
             }
             catch (KeyNotFoundException ex)
             {

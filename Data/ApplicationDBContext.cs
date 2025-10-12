@@ -51,6 +51,17 @@ namespace inventory_management_system.Data
                 .HasIndex(p => p.SKU)
                 .IsUnique();
 
+            // -------------------------------------
+            // Seed Method Data for RolePermissions
+            // -------------------------------------
+            modelBuilder.Entity<Method>().HasData(
+           new Method { MethodId = 1, MethodName = "GET" },
+           new Method { MethodId = 2, MethodName = "POST" },
+           new Method { MethodId = 3, MethodName = "PUT" },
+           new Method { MethodId = 4, MethodName = "DELETE" },
+           new Method { MethodId = 5, MethodName = "PATCH" }
+       );
+
             // --------------------------
             // Composite Indexes
             // --------------------------

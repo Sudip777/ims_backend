@@ -80,7 +80,7 @@ namespace inventory_management_system.Exceptions
 
         private static string GetSafeErrorMessage(Exception exception, int statusCode)
         {
-            // Never expose sensitive internal details in production for 5xx errors
+            //  5xx errors
             if (statusCode >= 500)
             {
                 return statusCode switch
@@ -92,7 +92,7 @@ namespace inventory_management_system.Exceptions
                 };
             }
 
-            // For client errors (4xx), it's safe to return the exception message
+            // For client errors (4xx)
             return exception.Message;
         }
     }
