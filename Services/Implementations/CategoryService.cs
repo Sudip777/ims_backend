@@ -28,6 +28,7 @@ namespace inventory_management_system.Services.Implementations
 
             return new CategoryResponse
             {
+                CategoryId = createdCategory.CategoryId,
                 CategoryName = createdCategory.CategoryName!,
                 ParentCategoryId = createdCategory.ParentCategoryId
             };
@@ -42,6 +43,7 @@ namespace inventory_management_system.Services.Implementations
             
             return categories.Select(ps => new CategoryResponse
             {
+                CategoryId = ps.CategoryId,
                 CategoryName = ps.CategoryName!,
                 ParentCategoryId = ps.ParentCategoryId
             }).ToList();
@@ -58,6 +60,7 @@ namespace inventory_management_system.Services.Implementations
             }
             return new CategoryResponse
             {
+                CategoryId = category.CategoryId,
                 CategoryName = category.CategoryName!,
                 ParentCategoryId = category.ParentCategoryId
             };

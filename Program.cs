@@ -75,6 +75,27 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// -----------------------
+// CORS Configuration
+// -----------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontendAndScalar",
+        policy =>
+        {
+            policy.WithOrigins(
+                "https://localhost:4200",   // Angular frontend
+                "http://localhost:4200",   // Angular frontend
+                "http://localhost:7024",   // API (HTTP)
+                "https://localhost:7024",  // API (HTTPS)
+                "http://localhost:5267",   // Scalar (HTTP)
+                "https://localhost:5267"   // Scalar (HTTPS)
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
 
 // -----------------------
 // Build App
@@ -103,9 +124,12 @@ if (app.Environment.IsDevelopment())
 // Middleware
 // -----------------------
 app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseCors("AllowFrontendAndScalar");
+if (!app.Environment.IsDevelopment())
+{
 app.UseHttpsRedirection();
+}
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors();
 app.MapControllers();
 app.Run();

@@ -64,8 +64,9 @@ namespace inventory_management_system.Repository.Implementations
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<Product> UpdateProductAsync(ProductDto product, int id)
+        public async Task<Product> UpdateProductAsync(ProductDto dto, int id)
         {
+            
             var entity = await _context.Products
                 .Include(p => p.Supplier)
                 .Include(p => p.Category)
@@ -73,12 +74,25 @@ namespace inventory_management_system.Repository.Implementations
 
             if (entity == null)
                 throw new KeyNotFoundException($"Product with ID {id} not found.");
-            var updatedProduct = product.MappedProduct();
-            _context.Products.Update(updatedProduct);
+
+            // DTO to the existing entity
+            entity.Name = dto.Name;
+            entity.SKU = dto.SKU;
+            entity.SupplierId = dto.SupplierId;
+            entity.CategoryId = dto.CategoryId;
+            entity.UnitPrice = dto.UnitPrice;
+            entity.CostPrice = dto.CostPrice;
+            entity.ReorderLevel = dto.ReorderLevel;
+            entity.MinStock = dto.MinStock;
+            entity.MaxStock = dto.MaxStock;
+            entity.IsActive = dto.IsActive;
+
             await _context.SaveChangesAsync();
-            return updatedProduct;
+
+            return entity;
         }
-       
+
+
     }
 
 }

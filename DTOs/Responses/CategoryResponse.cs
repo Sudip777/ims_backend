@@ -4,6 +4,7 @@ namespace inventory_management_system.DTOs.Responses
 {
     public class CategoryResponse
     {
+        public required int CategoryId { get; set; }
         public required string CategoryName { get; set; }
 
         public int? ParentCategoryId { get; set; }
@@ -15,6 +16,7 @@ namespace inventory_management_system.DTOs.Responses
 
             return new CategoryResponse
             {
+                CategoryId = dto.CategoryId,
                 CategoryName = dto.CategoryName!,
                 ParentCategoryId = dto.ParentCategoryId
             };
