@@ -18,12 +18,13 @@ namespace inventory_management_system.Controllers
     {
         private readonly IProductService _productService;
         private readonly ILogger<ProductController> _logger;
-        private readonly IValidator<RoleDto> _validator;
+        private readonly IValidator<ProductDto> _validator;
 
-        public ProductController(IProductService productService, ILogger<ProductController> logger)
+        public ProductController(IProductService productService, ILogger<ProductController> logger, IValidator<ProductDto>  validator)
         {
             _productService = productService;
             _logger = logger;
+            _validator = validator;
         }
 
         [HttpGet(ApiRoutes.Products.ById)]
@@ -110,7 +111,7 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateProduct([FromBody] ProductDto dto)
         {
-            var result = await _validator.ValidateAsync((IValidationContext) dto);
+            var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
                 _logger.LogWarning("Validation failed for product creation: Errors: {@Errors}",
@@ -122,14 +123,14 @@ namespace inventory_management_system.Controllers
             try
             {
                 var createdProduct = await _productService.RegisterProductAsync(dto);
-                return CreatedAtAction(
-                     nameof(GetProductById),
+                return Ok( 
                      new
                      {
                          message = "Product Created Successfully",
                          result = createdProduct,
                          response_code = "00"
                      });
+
             }
             catch (InvalidOperationException ex)
             {
@@ -153,7 +154,7 @@ namespace inventory_management_system.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto dto)
         {
-            var result = await _validator.ValidateAsync((IValidationContext)dto);
+            var result = await _validator.ValidateAsync(dto);
             if (!result.IsValid)
             {
                 _logger.LogWarning("Validation failed for product update: Errors: {@Errors}",
