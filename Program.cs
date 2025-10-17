@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure Serilog before building the host
 // -------------------------
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration) // <-- Read from appsettings.json
+    .ReadFrom.Configuration(builder.Configuration) 
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14)
@@ -84,12 +84,12 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                "https://localhost:4200",   // Angular frontend
-                "http://localhost:4200",   // Angular frontend
-                "http://localhost:7024",   // API (HTTP)
-                "https://localhost:7024",  // API (HTTPS)
-                "http://localhost:5267",   // Scalar (HTTP)
-                "https://localhost:5267"   // Scalar (HTTPS)
+                "https://localhost:4200",  
+                "http://localhost:4200", 
+                "http://localhost:7024",   
+                "https://localhost:7024",  
+                "http://localhost:5267",  
+                "https://localhost:5267"   
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod()

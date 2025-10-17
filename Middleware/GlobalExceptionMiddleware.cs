@@ -3,7 +3,6 @@ using inventory_management_system.Exceptions;
 
 namespace inventory_management_system.Middleware
 {
-   
         public class GlobalExceptionMiddleware
         {
         private readonly RequestDelegate _next;
