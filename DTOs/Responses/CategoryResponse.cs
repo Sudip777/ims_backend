@@ -12,8 +12,6 @@ namespace inventory_management_system.DTOs.Responses
 
         public static CategoryResponse MappedCategoryResponse(Category dto)
         {
-
-
             return new CategoryResponse
             {
                 CategoryId = dto.CategoryId,

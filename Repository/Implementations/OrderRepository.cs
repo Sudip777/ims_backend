@@ -105,7 +105,8 @@ namespace inventory_management_system.Repository.Implementations
             {
                 ProductId = od.ProductId,
                 Quantity = od.Quantity,
-                UnitPrice = od.UnitPrice
+                UnitPrice = od.UnitPrice,
+                 WarehouseId = od.WarehouseId,
             }).ToList();
 
             // Recalculate total
