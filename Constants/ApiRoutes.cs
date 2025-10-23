@@ -28,7 +28,7 @@
 
         public static class Inventory
         {
-            public const string Base = "api/inventory";
+            public const string Base = "api/inventories";
             public const string ById = "{id}";
             public const string LowStock = "low-stock";
           
@@ -108,6 +108,11 @@
         public static class UrlEndpoints
         {
             public const string Base = "api/url-endpoints";
+            public const string ById = "{id}";
+        }
+        public static class PurchaseOrderStatus
+        {
+            public const string Base = "api/purchase-order-status";
             public const string ById = "{id}";
         }
 

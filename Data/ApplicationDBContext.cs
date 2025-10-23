@@ -23,6 +23,8 @@ namespace inventory_management_system.Data
         public DbSet<InventoryTransactionHistory> InventoryTransactions { get; set; }
         public DbSet<ProductSupplier> ProductSuppliers { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
+        public DbSet<PurchaseOrderStatus> PurchaseOrderStatuses { get; set; }
+
         public DbSet<UrlEndpoint> UrlEndpoints { get; set; }
         public DbSet<Method> Methods { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
