@@ -61,7 +61,7 @@ namespace inventory_management_system.Controllers
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(15),
+                expires: DateTime.UtcNow.AddMinutes(120),
                 signingCredentials: signIn
             );
 
@@ -69,7 +69,7 @@ namespace inventory_management_system.Controllers
                _configuration["Jwt:Issuer"],
                _configuration["Jwt:Audience"],
                claims,
-               expires: DateTime.UtcNow.AddMinutes(60),
+               expires: DateTime.UtcNow.AddMinutes(240),
                signingCredentials: signIn
            );
 
@@ -226,7 +226,7 @@ namespace inventory_management_system.Controllers
                     _configuration["Jwt:Issuer"],
                     _configuration["Jwt:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddMinutes(15),
+                    expires: DateTime.UtcNow.AddMinutes(120),
                     signingCredentials: signIn
                 );
 
@@ -234,7 +234,7 @@ namespace inventory_management_system.Controllers
                     _configuration["Jwt:Issuer"],
                     _configuration["Jwt:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddMinutes(60),
+                    expires: DateTime.UtcNow.AddMinutes(240),
                     signingCredentials: signIn
                 );
 

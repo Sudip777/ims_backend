@@ -6,8 +6,8 @@ namespace inventory_management_system.Repository.Interfaces
 {
     public interface IProductRepository
     {
-        Task<ProductResponse> CreateProductAsync(ProductDto product);
-        Task<ProductResponse> GetProductByIdAsync(int id);
+        Task<Product> CreateProductAsync(Product product);
+        Task<Product> GetProductByIdAsync(int id);
         Task<(IEnumerable<Product> products, int totalCount)> GetAllProductsAsync(GetAllProductsRequest request);     
         Task<Product> UpdateProductAsync(ProductDto product, int id);
         Task<bool> DeleteProductAsync(int id);

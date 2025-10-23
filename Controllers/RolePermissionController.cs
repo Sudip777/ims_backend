@@ -5,6 +5,7 @@ using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
 using inventory_management_system.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -12,6 +13,7 @@ namespace inventory_management_system.Controllers
 {
     [ApiController]
     [Route(ApiRoutes.RolePermissions.Base)]
+    [Authorize(Roles = "Admin")]
     public class RolePermissionController:ControllerBase
     {
         private readonly IRolePermissionService _rolePermissionService;

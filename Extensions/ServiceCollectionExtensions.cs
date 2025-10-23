@@ -40,6 +40,8 @@ namespace inventory_management_system.Extensions
             services.AddScoped<IUrlEndpointService, UrlEndpointService>();
             services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
             services.AddScoped<IRolePermissionService, RolePermissionService>();
+            services.AddScoped<IPurchaseOrderStatusRepository, PurchaseOrderStatusRepository>();
+            services.AddScoped<IPurchaseOrderStatusService, PurchaseOrderStatusService>();
             services.AddScoped<ITokenCleanupService, TokenCleanupService>();
             services.AddHostedService<TokenCleanupService>();
             services.AddHttpContextAccessor();

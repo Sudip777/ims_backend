@@ -62,10 +62,12 @@ namespace inventory_management_system.Repository.Implementations
                 throw new KeyNotFoundException($"Inventory with ID {inventoryId} not found.");
 
 
-            var updatedInventory = inventory.MappedInventory();
-            _context.Inventories.Update(updatedInventory);
+            entity.ProductId = inventory.ProductId;
+            entity.WarehouseId = inventory.WarehouseId;
+            entity.Quantity = inventory.Quantity;
+            _context.Inventories.Update(entity);
             await _context.SaveChangesAsync();
-            return updatedInventory;
+            return entity;
         }
 
         public async Task<Inventory> CreateInventoryAsync(Inventory entity)

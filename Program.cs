@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure Serilog before building the host
 // -------------------------
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration) // <-- Read from appsettings.json
+    .ReadFrom.Configuration(builder.Configuration) 
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14)
@@ -75,6 +75,27 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// -----------------------
+// CORS Configuration
+// -----------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontendAndScalar",
+        policy =>
+        {
+            policy.WithOrigins(
+                "https://localhost:4200",  
+                "http://localhost:4200", 
+                "http://localhost:7024",   
+                "https://localhost:7024",  
+                "http://localhost:5267",  
+                "https://localhost:5267"   
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
 
 // -----------------------
 // Build App
@@ -103,9 +124,12 @@ if (app.Environment.IsDevelopment())
 // Middleware
 // -----------------------
 app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseCors("AllowFrontendAndScalar");
+if (!app.Environment.IsDevelopment())
+{
 app.UseHttpsRedirection();
+}
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors();
 app.MapControllers();
 app.Run();

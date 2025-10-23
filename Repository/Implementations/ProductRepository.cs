@@ -1,6 +1,5 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
-using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -16,26 +15,11 @@ namespace inventory_management_system.Repository.Implementations
         {
             _context = context;
         }
-        public async Task<ProductResponse> CreateProductAsync(ProductDto product)
+        public async Task<Product> CreateProductAsync(Product product)
         {
-            var entity = product.MappedProduct();
-            _context.Products.Add(entity);
+            _context.Products.Add(product);
             await _context.SaveChangesAsync();
-            return new ProductResponse
-            {
-                Name = entity.Name,
-                SKU = entity.SKU,
-                UnitPrice = entity.UnitPrice,
-                CostPrice = entity.CostPrice,
-                SupplierId = entity.SupplierId,
-                SupplierName = entity.Supplier?.Name,
-                CategoryId = (int)entity.CategoryId,
-                CategoryName = entity.Category?.CategoryName,
-                ReorderLevel = entity.ReorderLevel,
-                MinStock = entity.MinStock,
-                MaxStock = entity.MaxStock,
-                IsActive = entity.IsActive
-            };
+            return product;
         }
         public async Task<(IEnumerable<Product> products, int totalCount)> GetAllProductsAsync(GetAllProductsRequest request)   
         {
@@ -61,7 +45,7 @@ namespace inventory_management_system.Repository.Implementations
             return (products, totalCount);
         }
 
-        public async Task<ProductResponse> GetProductByIdAsync(int id)
+        public async Task<Product> GetProductByIdAsync(int id)
         {
             var product = await _context.Products
                 .Include(p => p.Supplier)
@@ -71,22 +55,7 @@ namespace inventory_management_system.Repository.Implementations
             if (product is null)
                 throw new KeyNotFoundException("Product Not Found");
 
-            return new ProductResponse
-            {
-                ProductId = product.ProductId,
-                Name = product.Name,
-                SKU = product.SKU,
-                UnitPrice = product.UnitPrice,
-                CostPrice = product.CostPrice,
-                SupplierId = product.SupplierId,
-                SupplierName = product.Supplier?.Name,
-                CategoryId = (int)product.CategoryId,
-                CategoryName = product.Category?.CategoryName,
-                ReorderLevel = product.ReorderLevel,
-                MinStock = product.MinStock,
-                MaxStock = product.MaxStock,
-                IsActive = product.IsActive
-            };
+            return product;
         }
         public async Task<bool> DeleteProductAsync(int id)
         {
@@ -95,8 +64,9 @@ namespace inventory_management_system.Repository.Implementations
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<Product> UpdateProductAsync(ProductDto product, int id)
+        public async Task<Product> UpdateProductAsync(ProductDto dto, int id)
         {
+            
             var entity = await _context.Products
                 .Include(p => p.Supplier)
                 .Include(p => p.Category)
@@ -104,12 +74,25 @@ namespace inventory_management_system.Repository.Implementations
 
             if (entity == null)
                 throw new KeyNotFoundException($"Product with ID {id} not found.");
-            var updatedProduct = product.MappedProduct();
-            _context.Products.Update(updatedProduct);
+
+            // DTO to the existing entity
+            entity.Name = dto.Name;
+            entity.SKU = dto.SKU;
+            entity.SupplierId = dto.SupplierId;
+            entity.CategoryId = dto.CategoryId;
+            entity.UnitPrice = dto.UnitPrice;
+            entity.CostPrice = dto.CostPrice;
+            entity.ReorderLevel = dto.ReorderLevel;
+            entity.MinStock = dto.MinStock;
+            entity.MaxStock = dto.MaxStock;
+            entity.IsActive = dto.IsActive;
+
             await _context.SaveChangesAsync();
-            return updatedProduct;
+
+            return entity;
         }
-       
+
+
     }
 
 }
