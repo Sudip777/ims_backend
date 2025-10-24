@@ -28,6 +28,7 @@ namespace inventory_management_system.Repository.Implementations
 
             var query = _context.PurchaseOrders
                 .Include(i => i.Supplier)
+                .Include(i=>i.PurchaseOrderDetails)
                 .AsQueryable();
 
             // Filtering
