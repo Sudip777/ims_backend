@@ -1,5 +1,6 @@
 ﻿using inventory_management_system.Constants;
 using inventory_management_system.Exceptions;
+using inventory_management_system.Filters;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace inventory_management_system.Controllers
     [ApiController]
     [Route(ApiRoutes.PurchaseOrderStatus.Base)]
     [Authorize]
-
+    [RolePermission]
     public class PurchaseOrderStatusController: ControllerBase
     {
         private readonly IPurchaseOrderStatusService _purchaseOrderStatusService;

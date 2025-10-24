@@ -4,6 +4,7 @@ using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
+using inventory_management_system.Filters;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,7 @@ namespace inventory_management_system.Controllers
 {
     [Route(ApiRoutes.Warehouses.Base)]
     [ApiController]
+    [RolePermission]
     public class WarehouseController : ControllerBase
     {
         private readonly IWarehouseService _warehouseService;

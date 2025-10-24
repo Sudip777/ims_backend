@@ -5,18 +5,21 @@ namespace inventory_management_system.Enums
     public enum UserRole
     {
         [Description("Admin")]
-        Admin = 1,
+        ADMIN = 1,
 
         [Description("Manager")]
-        Manager = 4,
+        MANAGER = 4,
 
         [Description("Sales")]
-        Sales = 5,
+        SALES = 5,
 
         [Description("Warehouse")]
-        Warehouse = 6,
+        WAREHOUSE = 6,
 
         [Description("Support")]
-        Support = 7
+        SUPPORT = 7,
+
+        [Description("Super Admin")]
+        SUPER_ADMIN = 8
     }
 }

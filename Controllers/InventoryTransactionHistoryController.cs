@@ -1,5 +1,6 @@
 ﻿using inventory_management_system.Constants;
 using inventory_management_system.Exceptions;
+using inventory_management_system.Filters;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ namespace inventory_management_system.Controllers
     [ApiController]
     [Route(ApiRoutes.InventoryTransactionHistory.Base)]
     [Authorize]
+    [RolePermission]
     public class InventoryTransactionHistoryController:ControllerBase
     {
         private readonly ILogger<InventoryTransactionHistoryController> _logger;

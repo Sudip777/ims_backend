@@ -4,6 +4,7 @@ using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
+using inventory_management_system.Filters;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ namespace inventory_management_system.Controllers
     [Route(ApiRoutes.Customers.Base)]
     [ApiController]
     [Authorize]
+    [RolePermission]
     public class CustomerController:ControllerBase
     {
         private readonly ILogger<CustomerController> _logger;
