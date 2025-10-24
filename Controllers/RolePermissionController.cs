@@ -13,7 +13,7 @@ namespace inventory_management_system.Controllers
 {
     [ApiController]
     [Route(ApiRoutes.RolePermissions.Base)]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = RoleConstants.SUPER_ADMIN)]
     public class RolePermissionController:ControllerBase
     {
         private readonly IRolePermissionService _rolePermissionService;

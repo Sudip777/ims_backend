@@ -1,5 +1,6 @@
 ﻿using inventory_management_system.Constants;
 using inventory_management_system.Exceptions;
+using inventory_management_system.Filters;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +8,7 @@ namespace inventory_management_system.Controllers
 {
     [ApiController]
     [Route(ApiRoutes.Dashboard.Base)]
+    [RolePermission]
     public class DashboardController:ControllerBase
     {
         private readonly ILogger<DashboardController> _logger;

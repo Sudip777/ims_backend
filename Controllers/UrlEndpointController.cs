@@ -14,7 +14,7 @@ namespace inventory_management_system.Controllers
 {
     [ApiController]
     [Route(ApiRoutes.UrlEndpoints.Base)]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = RoleConstants.SUPER_ADMIN)]
     public class UrlEndpointController:ControllerBase
     {
         private readonly IUrlEndpointService _urlEndpointService;

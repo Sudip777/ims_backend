@@ -24,6 +24,10 @@ builder.Host.UseSerilog();
 // -----------------------
 // Add Services
 // -----------------------
+
+// Register memory cache
+builder.Services.AddMemoryCache();
+
 builder.Services.AddControllers()
     .AddFluentValidation(fv => fv.AutomaticValidationEnabled = false);
 
