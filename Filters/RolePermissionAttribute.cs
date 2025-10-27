@@ -4,15 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
 
 namespace inventory_management_system.Filters
 {
     public class RolePermissionAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
-      public void OnAuthorization(AuthorizationFilterContext context)
+        public void OnAuthorization(AuthorizationFilterContext context)
         {
             var user = context.HttpContext.User;
             if (!user.Identity.IsAuthenticated)
@@ -21,40 +18,59 @@ namespace inventory_management_system.Filters
                 return;
             }
 
-            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = user.FindFirst("UserId")?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 context.Result = new UnauthorizedResult();
                 return;
             }
 
-            // Bypass for admin routes
-            var requestPath = context.HttpContext.Request.Path.Value;
-            if (requestPath.StartsWith("/api/role-permission") || requestPath.StartsWith("/api/url-endpoints"))
+            var roleIdClaim = user.FindFirst("RoleId")?.Value;
+            if (!int.TryParse(roleIdClaim, out var roleId))
+            {
+                context.Result = new UnauthorizedResult();
+                return;
+            }
+
+            var dbContext = context.HttpContext.RequestServices.GetRequiredService<ApplicationDBContext>();
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<RolePermissionAttribute>>();
+            var cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
+
+            //Check if user is SUPER_ADMIN and allow all endpoints for him
+            var isSuperAdmin = dbContext.Roles
+                .Any(r => r.RoleId == roleId && r.RoleName == "SUPER_ADMIN");
+
+            if (isSuperAdmin)
             {
                 return;
             }
 
+            // Except SUPER_ADMIN should pass this
+            var requestPath = context.HttpContext.Request.Path.Value;
             var requestMethod = context.HttpContext.Request.Method;
-            var dbContext = context.HttpContext.RequestServices.GetRequiredService<ApplicationDBContext>();
-            var cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
             var cacheKey = $"Permission_{userId}_{requestMethod}_{requestPath}";
 
             if (!cache.TryGetValue(cacheKey, out bool hasPermission))
             {
+                // Normalize the request path (avoid query parameters)
+                var uri = new Uri(requestPath, UriKind.RelativeOrAbsolute);
+                var normalizedPath = uri.IsAbsoluteUri ? uri.AbsolutePath : requestPath;
+
                 hasPermission = dbContext.RolePermissions
                     .Include(rp => rp.UrlEndpoint)
                     .Include(rp => rp.Method)
-                    .Any(rp => dbContext.Users.Any(u => u.UserId.ToString() == userId && u.RoleId == rp.RoleId)
-                               && (rp.UrlEndpoint.Url == requestPath)
-                               && rp.Method.MethodName == requestMethod);
+                    .Any(rp =>
+                        rp.RoleId == roleId &&
+                        rp.UrlEndpoint.Url == normalizedPath &&
+                        rp.Method.MethodName == requestMethod
+                    );
 
+                // Cache result for faster lookups
                 cache.Set(cacheKey, hasPermission, TimeSpan.FromMinutes(10));
             }
 
             if (!hasPermission)
             {
-                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<RolePermissionAttribute>>();
                 logger.LogWarning("User {UserId} denied access to {Method} {Path}", userId, requestMethod, requestPath);
                 context.Result = new ForbidResult();
             }

@@ -15,7 +15,8 @@ namespace inventory_management_system.Helpers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("UserId", user.UserId.ToString()),
                 new Claim("Username", user.Username),
-                new Claim(ClaimTypes.Role, user.Role.RoleName)
+                new Claim("RoleId", user.RoleId.ToString()),
+
             };
         }
 
