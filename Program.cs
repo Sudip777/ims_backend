@@ -10,7 +10,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 // -------------------------
-// Configure Serilog before building the host
+// Configure Serilog
 // -------------------------
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration) 
@@ -106,7 +106,7 @@ builder.Services.AddCors(options =>
 // -----------------------
 var app = builder.Build();
 
-// expose the OpenAPI JSON (e.g. /openapi/v1.json)
+// expose the OpenAPI JSON 
 app.MapOpenApi();
 
 if (app.Environment.IsDevelopment())

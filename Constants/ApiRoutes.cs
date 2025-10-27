@@ -16,8 +16,14 @@
             public const string RefreshToken = "refresh-token";
             public const string Logout = "logout";
            
+           
         }
-       
+        public static class User
+        {
+            public const string Base = "user";
+            public const string ById = "{id}";
+        }
+
 
         public static class Customers
         {
@@ -113,6 +119,11 @@
         public static class PurchaseOrderStatus
         {
             public const string Base = "api/purchase-order-status";
+            public const string ById = "{id}";
+        }
+        public static class UserMenu
+        {
+            public const string Base = "api/user-menu";
             public const string ById = "{id}";
         }
 

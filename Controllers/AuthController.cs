@@ -21,7 +21,6 @@ namespace inventory_management_system.Controllers
 {
     [Route(ApiRoutes.Auth.Base)]
     [ApiController]
-
     public class AccountController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
@@ -143,7 +142,7 @@ namespace inventory_management_system.Controllers
 
 
 
-        [HttpGet]
+        [HttpGet(ApiRoutes.User.Base)]
         [Authorize]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -293,7 +292,7 @@ namespace inventory_management_system.Controllers
 
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "SUPER_ADMIN")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
