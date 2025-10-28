@@ -1,6 +1,5 @@
 ﻿using inventory_management_system.Constants;
 using inventory_management_system.Exceptions;
-using inventory_management_system.Filters;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

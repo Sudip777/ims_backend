@@ -1,10 +1,14 @@
-﻿using inventory_management_system.Exceptions;
+﻿using inventory_management_system.Constants;
+using inventory_management_system.Exceptions;
 using inventory_management_system.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace inventory_management_system.Repositories
 {
+    [ApiController]
+    [Route(ApiRoutes.UserMenu.Base)]
+    [Authorize]
     public class UserMenuController : ControllerBase
     {
         private readonly IUserMenuService _menuService;
@@ -21,22 +25,20 @@ namespace inventory_management_system.Repositories
         {
             try
             {
-            var userRoleIdString = User?.FindFirst(ClaimTypes.Role)?.Value ?? "1";
-            int userRoleId = int.TryParse(userRoleIdString, out var parsedRoleId) ? parsedRoleId : 1;
+                var roleIdClaim = User?.FindFirst("RoleId")?.Value;
+                if (!int.TryParse(roleIdClaim, out var roleId) || roleId <= 0)
+                    return Unauthorized("Invalid role.");
 
-            var navItems = await _menuService.GetMenuItemsAsync(userRoleId);
+                var navItems = await _menuService.GetMenuItemsAsync(roleId);
+                if (navItems == null || !navItems.Any())
+                    return NotFound(new { Message = "No menu items found.", response_code = "01" });
 
-            if (navItems == null || !navItems.Any()) //best practice
-            {
-                return NotFound();
-            }
-
-            return Ok(new 
-            {
-                Message = "Menu Items Fetched Successfully.",
-                result = navItems,
-                response_code = "00"
-            });
+                return Ok(new
+                {
+                    Message = "Menu Items Fetched Successfully.",
+                    result = navItems,
+                    response_code = "00"
+                });
 
             }
             catch (InvalidOperationException exception)

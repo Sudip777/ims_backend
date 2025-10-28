@@ -4,7 +4,6 @@ using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Exceptions;
 using inventory_management_system.Extensions;
-using inventory_management_system.Filters;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +24,7 @@ namespace inventory_management_system.Controllers
             _validator = validator;
         }
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<SupplierResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<WarehouseResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public  async Task<IActionResult> GetAllWarehouses()
         {
