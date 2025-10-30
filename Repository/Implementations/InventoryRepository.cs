@@ -1,5 +1,6 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
+using inventory_management_system.Extensions;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -22,23 +23,30 @@ namespace inventory_management_system.Repository.Implementations
                 .AsQueryable();
 
             // Filtering
-            if (request.InventoryId.HasValue)
-                query = query.Where(i => i.InventoryId == request.InventoryId.Value);
-
             if (request.ProductId.HasValue)
                 query = query.Where(i => i.ProductId == request.ProductId.Value);
 
             if (request.WarehouseId.HasValue)
                 query = query.Where(i => i.WarehouseId == request.WarehouseId.Value);
 
+            if (!string.IsNullOrEmpty(request.Search))
+    {
+        var searchTerm = request.Search.ToLower();
+            query = query.Where(i =>
+                EF.Functions.Like(i.Product.Name.ToLower(), $"%{searchTerm}%") ||
+                EF.Functions.Like(i.Warehouse.Name.ToLower(), $"%{searchTerm}%") ||
+                EF.Functions.Like(i.InventoryId.ToString(), $"%{searchTerm}%")
+            );
+    }
+
+            query = request.SortDirection == "asc" ? query.OrderByDynamic(request.SortColumn) : query.OrderByDescendingDynamic(request.SortColumn);
+
             // Total count
             var totalCount = await query.CountAsync();
 
             // sorting and pagination
             var inventories = await query
-                .OrderBy(i => i.InventoryId)
-                .ThenBy(i => i.ProductId)
-                .ThenBy(i => i.WarehouseId)
+    
                 .Skip((request.Page - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync();

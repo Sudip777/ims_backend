@@ -1,4 +1,5 @@
 ﻿using inventory_management_system.DTOs.Responses;
+using inventory_management_system.Enums;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
 
@@ -16,6 +17,20 @@ namespace inventory_management_system.Services.Implementations
         public async Task<List<NavItemDto>> GetMenuItemsAsync(int roleId)
         {
             var urls = await _repository.GetMappedUrlsByRoleIdAsync(roleId);
+
+            // Ensure "/dashboard/overview" is included for Admin and Super Admin
+            if (roleId == (int)UserRole.ADMIN || roleId == (int)UserRole.SUPER_ADMIN)
+            {
+                if (!urls.Contains("/dashboard/overview"))
+                    urls.Add("/dashboard/overview");
+
+                // Always put it first
+                urls = urls
+                    .OrderByDescending(u => u == "/dashboard/overview")
+                    .ThenBy(u => u)
+                    .ToList();
+            }
+
             Console.WriteLine($"Role {roleId} URLs: {string.Join(", ", urls)}");
 
             return urls.Select(MapUrlToNavItem).ToList();

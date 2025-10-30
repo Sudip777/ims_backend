@@ -1,5 +1,6 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
+using inventory_management_system.Extensions;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -25,19 +26,34 @@ namespace inventory_management_system.Repository.Implementations
         {
             var query = _context.Products
                .Include(i => i.Category)
+               .Include(i=>i.Supplier)
                .AsQueryable();
 
             // Filtering
             if (request.CategoryId.HasValue)
                 query = query.Where(i => i.CategoryId == request.CategoryId.Value);
 
+            if (request.SupplierId.HasValue)
+                query = query.Where(i => i.SupplierId == request.SupplierId.Value);
+
+            if (!string.IsNullOrEmpty(request.Search))
+            {
+                var searchTerm = request.Search.ToLower();
+                query = query.Where(i =>
+                       EF.Functions.Like(i.SKU.ToLower(), $"%{searchTerm}%") ||
+                       EF.Functions.Like(i.Name.ToLower(), $"%{searchTerm}%") ||
+                       EF.Functions.Like(i.Category.CategoryName.ToLower(), $"%{searchTerm}%"));
+            }
+
+            query = request.SortDirection == "asc"
+                    ? query.OrderByDynamic(request.SortColumn)
+                    : query.OrderByDescendingDynamic(request.SortColumn);
+
             // Total count
             var totalCount = await query.CountAsync();
 
-            // sorting and pagination
+            //pagination
             var products = await query
-                .OrderBy(i => i.CategoryId)
-                .ThenBy(i => i.ProductId)
                 .Skip((request.Page - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync();
@@ -91,8 +107,7 @@ namespace inventory_management_system.Repository.Implementations
 
             return entity;
         }
-
-
     }
 
 }
+

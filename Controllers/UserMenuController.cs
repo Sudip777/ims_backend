@@ -31,7 +31,7 @@ namespace inventory_management_system.Repositories
 
                 var navItems = await _menuService.GetMenuItemsAsync(roleId);
                 if (navItems == null || !navItems.Any())
-                    return NotFound(new { Message = "No menu items found.", response_code = "01" });
+                    return NotFound();
 
                 return Ok(new
                 {

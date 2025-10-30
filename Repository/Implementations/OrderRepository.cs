@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
+using inventory_management_system.Extensions;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,7 @@ namespace inventory_management_system.Repository.Implementations
             var query = _context.Orders
                 .Include(i => i.Customer)
                 .Include(i=>i.OrderDetails)
-                  .ThenInclude(od => od.Product)
+                 .ThenInclude(od => od.Product)
                  .Include(o => o.Status)
                 .AsQueryable();
 
@@ -42,18 +43,20 @@ namespace inventory_management_system.Repository.Implementations
             if (req.CustomerId.HasValue)
                 query = query.Where(i => i.CustomerId == req.CustomerId.Value);
 
-            if (req.StartDate.HasValue)
-                query = query.Where(i => i.OrderDate >= req.StartDate.Value);
+            if (!string.IsNullOrEmpty(req.Search))
+            {
+                var term = req.Search.ToString();
+                query = query.Where(i =>
+                       EF.Functions.Like(i.Customer.Name.ToLower(), $"%{term}%") ||
+                       EF.Functions.Like(i.OrderId.ToString(), $"%{term}%"));
+            }
 
-            if (req.EndDate.HasValue)
-                query = query.Where(i => i.OrderDate <= req.EndDate.Value);
-
+            query = req.SortDirection == "asc" ? query.OrderByDynamic(req.SortColumn) : query.OrderByDescendingDynamic(req.SortColumn);
             // Total count
             var totalCount = await query.CountAsync();
 
-        // sorting and pagination
+        // pagination
         var orders = await query
-            .OrderBy(i => i.CustomerId)
             .Skip((req.Page - 1) * req.PageSize)
             .Take(req.PageSize)
             .ToListAsync();
