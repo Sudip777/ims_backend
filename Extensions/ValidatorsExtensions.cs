@@ -9,6 +9,10 @@ namespace inventory_management_system.Extensions
         {
           
             services.AddValidatorsFromAssemblyContaining<ProductSupplierValidator>();
+            services.AddValidatorsFromAssemblyContaining<GetAllInventoriesRequestValidator>();
+            services.AddValidatorsFromAssemblyContaining<GetAllPurchaseOrderRequestValidator>();
+
+
             return services;
            
         }

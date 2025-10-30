@@ -1,5 +1,6 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
+using inventory_management_system.Extensions;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ namespace inventory_management_system.Repository.Implementations
 
             var query = _context.PurchaseOrders
                 .Include(i => i.Supplier)
+                .Include(i=>i.Status)
                 .Include(i=>i.PurchaseOrderDetails)
                 .AsQueryable();
 
@@ -35,18 +37,20 @@ namespace inventory_management_system.Repository.Implementations
             if (req.SupplierId.HasValue)
                 query = query.Where(i => i.SupplierId == req.SupplierId.Value);
 
-            if (req.StartDate.HasValue)
-                query = query.Where(i => i.OrderDate >= req.StartDate.Value);
+            if (!string.IsNullOrEmpty(req.Search))
+            {
+                var term = req.Search.ToLower();
+                query = query.Where(i =>
+                       EF.Functions.Like(i.Supplier.Name.ToLower(), $"%{term}%") ||
+                       EF.Functions.Like(i.PurchaseOrderId.ToString(), $"%{term}%")
+       );
+            }
+            query = req.SortDirection == "asc" ? query.OrderByDynamic(req.SortColumn) : query.OrderByDescendingDynamic(req.SortColumn);
 
-            if (req.EndDate.HasValue)
-                query = query.Where(i => i.OrderDate <= req.EndDate.Value);
-
-            // Total count
             var totalCount = await query.CountAsync();
 
             // sorting and pagination
             var orders = await query
-                .OrderBy(i => i.SupplierId)
                 .Skip((req.Page - 1) * req.PageSize)
                 .Take(req.PageSize)
                 .ToListAsync();
@@ -58,7 +62,7 @@ namespace inventory_management_system.Repository.Implementations
             _context.PurchaseOrders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Reload with navigation properties
+            // with navigtiion properties
             var createdOrder = await _context.PurchaseOrders
                 .Include(o => o.Supplier)
                 .Include(o => o.Status)
@@ -77,7 +81,6 @@ namespace inventory_management_system.Repository.Implementations
             if (order == null)
                 throw new KeyNotFoundException($"Order with ID {id} not found.");
 
-            // Update
             order.StatusId = orderDto.StatusId;
             order.OrderDate = DateTime.UtcNow;
 
@@ -105,7 +108,6 @@ namespace inventory_management_system.Repository.Implementations
 
             order.StatusId = newStatusId;
             await _context.SaveChangesAsync();
-
             return order;
         }
     }
