@@ -1,12 +1,14 @@
 ﻿using FluentValidation.AspNetCore;
 using inventory_management_system.Data;
 using inventory_management_system.Extensions;
+using inventory_management_system.Helpers;
 using inventory_management_system.Middleware;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Serilog;
-
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 // -------------------------
@@ -27,6 +29,8 @@ builder.Host.UseSerilog();
 
 // Register memory cache
 builder.Services.AddMemoryCache();
+
+
 
 builder.Services.AddControllers()
     .AddFluentValidation(fv => fv.AutomaticValidationEnabled = false);
@@ -100,13 +104,48 @@ builder.Services.AddCors(options =>
                 .AllowCredentials();
         });
 });
+// -----------------------
+// In Memory RATE LIMITING
+// -----------------------
+
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = 429;
+
+    options.AddFixedWindowLimiter("LoginLimiter", opt =>
+    {
+        opt.PermitLimit = 100;
+        opt.Window = TimeSpan.FromMinutes(5);
+        opt.QueueLimit = 0;
+    });
+    options.OnRejected = async (context, token) =>
+    {
+        var retryAfter = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var ra)
+            ? (int)ra.TotalSeconds
+            : 900; 
+
+        var error = ProblemDetailHelper.CreateErrorResponse(
+            errorKey: "rate-limit-exceeded",
+            title: "Too many login attempts",
+            status: 429,
+            detail: "You have exceeded the maximum number of login attempts. Please try again later.",
+            httpContext: context.HttpContext
+        );
+
+        context.HttpContext.Response.StatusCode = 429;
+        context.HttpContext.Response.ContentType = "application/problem+json";
+        await context.HttpContext.Response.WriteAsJsonAsync(error, cancellationToken: token);
+    };
+});
+
+
 
 // -----------------------
 // Build App
 // -----------------------
 var app = builder.Build();
 
-// expose the OpenAPI JSON 
 app.MapOpenApi();
 
 if (app.Environment.IsDevelopment())
@@ -133,6 +172,7 @@ if (!app.Environment.IsDevelopment())
 {
 app.UseHttpsRedirection();
 }
+app.UseRateLimiter();   // Must be before Authh        
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

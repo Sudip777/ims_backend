@@ -11,6 +11,7 @@ using inventory_management_system.Security;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -43,6 +44,7 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPost(ApiRoutes.Auth.Login)]
+        [EnableRateLimiting("LoginLimiter")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto loginDTO)
         {
