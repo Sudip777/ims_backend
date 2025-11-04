@@ -1,9 +1,7 @@
-﻿using Azure.Core;
-using inventory_management_system.Data;
+﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Models;
-using inventory_management_system.Repository.Implementations;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -83,6 +81,7 @@ namespace inventory_management_system.Services.Implementations
                     {
                         PurchaseOrderDetailId = od.PurchaseOrderDetailId,
                         ProductId = od.ProductId,
+                        ProductName = od.Product.Name,
                         Quantity = od.Quantity,
                         UnitPrice = od.UnitPrice
                     }).ToList()
@@ -91,7 +90,6 @@ namespace inventory_management_system.Services.Implementations
 
             if (orders == null)
                 throw new KeyNotFoundException($" Purchase Order with ID {id} not found.");
-
             return orders;
         }
 

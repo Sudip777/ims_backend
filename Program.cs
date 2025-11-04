@@ -44,6 +44,14 @@ builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
+        // Add API Info
+        document.Info = new OpenApiInfo
+        {
+            Title = "Inventory Management System API",
+            Version = "v1.0",
+            Description = "API for managing inventory, products, orders, and authentication"
+        };
+
         document.Components ??= new OpenApiComponents();
 
         document.Components.SecuritySchemes["BearerAuth"] = new OpenApiSecurityScheme
@@ -92,18 +100,21 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                "https://localhost:4200",  
-                "http://localhost:4200", 
-                "http://localhost:7024",   
-                "https://localhost:7024",  
-                "http://localhost:5267",  
-                "https://localhost:5267"   
-                )
+                "http://localhost:9091", //local testing
+                "http://192.168.1.68:9091",     // ← Angular from external
+                "http://localhost:9091",       
+                "http://localhost:9090",
+                "http://localhost:4200"
+                
+
+
+                ) // Angular Frontend
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
         });
 });
+
 // -----------------------
 // In Memory RATE LIMITING
 // -----------------------
@@ -170,7 +181,8 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseCors("AllowFrontendAndScalar");
 if (!app.Environment.IsDevelopment())
 {
-app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
+    app.MapScalarApiReference();
 }
 app.UseRateLimiter();   // Must be before Authh        
 app.UseAuthentication();

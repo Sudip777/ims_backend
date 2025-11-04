@@ -7,7 +7,6 @@ namespace inventory_management_system.Services.Interfaces
     {
 
         Task<InventoryResponse> CreateInventoryAsync(InventoryDto inventory);
-        //Task<IEnumerable<InventoryResponse>> GetAllInventoryAsync();
         Task<PagedResponse<InventoryResponse>> GetAllInventoryAsync(GetAllInventoriesRequest request);
         Task<InventoryResponse?> GetInventoryByIdAsync(int id);
         Task<InventoryResponse> UpdateInventoryAsync(InventoryDto inventory, int inventoryId);

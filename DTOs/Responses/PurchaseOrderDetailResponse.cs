@@ -7,6 +7,7 @@ namespace inventory_management_system.DTOs.Responses
     {
         public int PurchaseOrderDetailId { get; set; }
         public int ProductId { get; set; }
+        public string? ProductName { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
 
@@ -17,6 +18,7 @@ namespace inventory_management_system.DTOs.Responses
             {
                 PurchaseOrderDetailId = od.PurchaseOrderDetailId,
                 ProductId = od.ProductId,
+                ProductName=od.Product?.Name ?? "N/A",
                 Quantity = od.Quantity,
                 UnitPrice = od.UnitPrice,
             };
