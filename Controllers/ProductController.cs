@@ -15,6 +15,9 @@ namespace inventory_management_system.Controllers
     [ApiController]
     [Authorize]
     [RolePermission]
+    // <summary>
+    // Manages product inventory operations
+    // </summary>
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -66,7 +69,28 @@ namespace inventory_management_system.Controllers
             }
 
         }
-
+        /// <summary>
+        /// Retrieves a paginated list of products with filtering and sorting options
+        /// </summary>
+        /// <param name="request">Query parameters for filtering, sorting, and pagination</param>
+        /// <returns>Paginated list of products</returns>
+        /// <response code="200">Successfully retrieved products</response>
+        /// <response code="401">Unauthorized - invalid or missing JWT token</response>
+        /// <response code="404">No products found</response>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     GET /api/products?page=1&amp;pageSize=10&amp;search=laptop&amp;categoryId=1&amp;sortColumn=name&amp;sortDirection=asc
+        ///     
+        /// Query Parameters:
+        /// - **CategoryId**: Filter by category (optional)
+        /// - **SupplierId**: Filter by supplier (optional)
+        /// - **Search**: Search in product name or SKU (optional)
+        /// - **SortColumn**: Column to sort by (name, price, stock, etc.)
+        /// - **SortDirection**: Sort order (asc or desc)
+        /// - **Page**: Page number (required, default: 1)
+        /// - **PageSize**: Items per page (required, default: 10, max: 100)
+        /// </remarks>
         [HttpGet]
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
