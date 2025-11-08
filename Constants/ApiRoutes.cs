@@ -24,6 +24,12 @@
             public const string ById = "{id}";
         }
 
+        public static class Onboarding
+        {
+            public const string Base = "onboarding";
+            public const string ById = "{id}";
+        }
+
 
         public static class Customers
         {

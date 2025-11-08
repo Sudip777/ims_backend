@@ -29,6 +29,8 @@ namespace inventory_management_system.Data
         public DbSet<Method> Methods { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<Token> Tokens { get; set; }
+        public DbSet<Onboarding> Onboardings { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

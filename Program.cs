@@ -105,9 +105,6 @@ builder.Services.AddCors(options =>
                 "http://localhost:9091",       
                 "http://localhost:9090",
                 "http://localhost:4200"
-                
-
-
                 ) // Angular Frontend
                 .AllowAnyHeader()
                 .AllowAnyMethod()
