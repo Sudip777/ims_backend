@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Text.Json.Serialization;
 
     
         public class User
@@ -42,8 +43,12 @@
 
             [Required]
             public DateTime CreatedAt { get; set; } = DateTime.Now;
+            public int? OnboardingId { get; set; }
+        [JsonIgnore]
+        [ForeignKey("OnboardingId")]
+            public virtual Onboarding? Onboarding { get; set; }
 
-            // Navigation properties
+        // Navigation properties
             public virtual ICollection<Customer>? CreatedCustomers { get; set; }
             public virtual ICollection<Supplier>? CreatedSuppliers { get; set; }
             public virtual ICollection<Warehouse>? CreatedWarehouses { get; set; }
