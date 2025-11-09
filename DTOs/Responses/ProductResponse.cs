@@ -21,9 +21,9 @@ namespace inventory_management_system.DTOs.Responses
         public int? MaxStock { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; }
+        public int TotalCount { get; set; }
 
-
-        public static ProductResponse MappeddProductResponse(Product product)
+        public static ProductResponse MappeddProductResponse(Product product, int totalCount = 0)
         {
             return new ProductResponse
             {
@@ -41,7 +41,7 @@ namespace inventory_management_system.DTOs.Responses
                 MinStock = product.MinStock,
                 MaxStock = product.MaxStock,
                 IsActive = product.IsActive,
-                CreatedAt = DateTime.UtcNow
+                TotalCount = totalCount,
             };
         }
     }

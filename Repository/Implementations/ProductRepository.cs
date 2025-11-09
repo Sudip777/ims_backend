@@ -1,5 +1,6 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
+using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Extensions;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
@@ -22,44 +23,25 @@ namespace inventory_management_system.Repository.Implementations
             await _context.SaveChangesAsync();
             return product;
         }
-        public async Task<(IEnumerable<Product> products, int totalCount)> GetAllProductsAsync(GetAllProductsRequest request)   
+        public async Task<(IEnumerable<Product> products, int totalCount)> GetAllProductsAsync(GetAllProductsRequest request)
         {
-            var query = _context.Products
-               .Include(i => i.Category)
-               .Include(i=>i.Supplier)
-               .AsQueryable();
-
-            // Filtering
-            if (request.CategoryId.HasValue)
-                query = query.Where(i => i.CategoryId == request.CategoryId.Value);
-
-            if (request.SupplierId.HasValue)
-                query = query.Where(i => i.SupplierId == request.SupplierId.Value);
-
-            if (!string.IsNullOrEmpty(request.Search))
-            {
-                var searchTerm = request.Search.ToLower();
-                query = query.Where(i =>
-                       EF.Functions.Like(i.SKU.ToLower(), $"%{searchTerm}%") ||
-                       EF.Functions.Like(i.Name.ToLower(), $"%{searchTerm}%") ||
-                       EF.Functions.Like(i.Category.CategoryName.ToLower(), $"%{searchTerm}%"));
-            }
-
-            query = request.SortDirection == "asc"
-                    ? query.OrderByDynamic(request.SortColumn)
-                    : query.OrderByDescendingDynamic(request.SortColumn);
-
-            // Total count
-            var totalCount = await query.CountAsync();
-
-            //pagination
-            var products = await query
-                .Skip((request.Page - 1) * request.PageSize)
-                .Take(request.PageSize)
+            var products = await _context.Products
+                .FromSqlInterpolated($@"
+                 EXEC dbo.GetProductData
+                @CategoryId = {request.CategoryId},
+                @SupplierId = {request.SupplierId},
+                @Search = {request.Search},
+                @SortColumn = {request.SortColumn},
+                @SortDirection = {request.SortDirection},
+                @Page = {request.Page},
+                @PageSize = {request.PageSize}")
+                .AsNoTracking()
                 .ToListAsync();
 
+            int totalCount = products.Count;
             return (products, totalCount);
         }
+
 
         public async Task<Product> GetProductByIdAsync(int id)
         {
