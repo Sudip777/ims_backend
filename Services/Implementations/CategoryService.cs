@@ -30,7 +30,8 @@ namespace inventory_management_system.Services.Implementations
             {
                 CategoryId = createdCategory.CategoryId,
                 CategoryName = createdCategory.CategoryName!,
-                ParentCategoryId = createdCategory.ParentCategoryId
+                ParentCategoryId = createdCategory.ParentCategoryId,
+
             };
         }
 
@@ -45,7 +46,8 @@ namespace inventory_management_system.Services.Implementations
             {
                 CategoryId = ps.CategoryId,
                 CategoryName = ps.CategoryName!,
-                ParentCategoryId = ps.ParentCategoryId
+                ParentCategoryId = ps.ParentCategoryId,
+                ParentCategory = ps.ParentCategory != null ? ps.ParentCategory.CategoryName : "N/A",
             }).ToList();
         }
 
