@@ -8,6 +8,8 @@ namespace inventory_management_system.DTOs.Responses
         public required string CategoryName { get; set; }
 
         public int? ParentCategoryId { get; set; }
+        public string? ParentCategory { get; set; }
+
 
 
         public static CategoryResponse MappedCategoryResponse(Category dto)
@@ -16,7 +18,9 @@ namespace inventory_management_system.DTOs.Responses
             {
                 CategoryId = dto.CategoryId,
                 CategoryName = dto.CategoryName!,
-                ParentCategoryId = dto.ParentCategoryId
+                ParentCategoryId = dto.ParentCategoryId,
+                ParentCategory = dto.ParentCategory != null ? dto.ParentCategory.CategoryName: "N/A"
+
             };
 
         }
