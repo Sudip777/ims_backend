@@ -130,6 +130,38 @@ namespace inventory_management_system.Controllers
             }
         }
 
+        [HttpGet("api/products/lists")]
+        [ProducesResponseType(typeof(ProductDropdownResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetProductsLists()
+        {
+            try
+            {
+                var products = await _productService.GetAllProductLists();
+            return Ok(new
+            {
+                message = "Products Fetched Successfully",
+                result = products,
+                response_code = "00"
+            });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+           $"Unhandled exception while retrieving products, by user {User.Identity?.Name}",
+           User.Identity?.Name ?? "Anonymous"
+           );
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                   ExceptionHandler.HandleException(ex, HttpContext));
+            }
+        }
+
+
         [HttpPost]
         [ProducesResponseType(typeof(ProductDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

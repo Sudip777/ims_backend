@@ -1,7 +1,5 @@
 ﻿using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
-using inventory_management_system.DTOs.Responses;
-using inventory_management_system.Extensions;
 using inventory_management_system.Models;
 using inventory_management_system.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -26,8 +24,8 @@ namespace inventory_management_system.Repository.Implementations
         public async Task<(IEnumerable<Product> products, int totalCount)> GetAllProductsAsync(GetAllProductsRequest request)
         {
             var products = await _context.Products
-                .FromSqlInterpolated($@"
-                 EXEC dbo.GetProductData
+         .FromSqlInterpolated($@"
+            EXEC dbo.GetProductData
                 @CategoryId = {request.CategoryId},
                 @SupplierId = {request.SupplierId},
                 @Search = {request.Search},
@@ -37,6 +35,25 @@ namespace inventory_management_system.Repository.Implementations
                 @PageSize = {request.PageSize}")
                 .AsNoTracking()
                 .ToListAsync();
+
+            var supplierIds = products.Select(p => p.SupplierId).Distinct();
+            var categoryIds = products.Select(p => p.CategoryId).Distinct();
+
+            var suppliers = await _context.Suppliers
+                .Where(s => supplierIds.Contains(s.SupplierId))
+                .ToListAsync();
+
+            var categories = await _context.Categories
+                .Where(c => categoryIds.Contains(c.CategoryId))
+                .ToListAsync();
+
+            foreach (var p in products)
+            {
+                p.Supplier = suppliers.FirstOrDefault(s => s.SupplierId == p.SupplierId);
+                p.Category = categories.FirstOrDefault(c => c.CategoryId == p.CategoryId);
+            }
+
+
 
             int totalCount = products.Count;
             return (products, totalCount);
@@ -88,6 +105,11 @@ namespace inventory_management_system.Repository.Implementations
             await _context.SaveChangesAsync();
 
             return entity;
+        }
+
+        public async Task<IEnumerable<Product>> GetAllProductLists()
+        {
+            return await _context.Products.ToListAsync();
         }
     }
 
