@@ -8,6 +8,7 @@ namespace inventory_management_system.Services.Interfaces
         Task<ProductResponse> RegisterProductAsync(ProductDto dto);
         Task<ProductResponse?> GetProductByIdAsync(int id);
         Task<PagedResponse<ProductResponse>> GetAllProductsAsync(GetAllProductsRequest req);
+        Task <IEnumerable<ProductDropdownResponse>> GetAllProductLists();
 
         Task<ProductResponse> UpdateProductAsync(int productId, ProductDto dto);
         Task<bool> DeleteProductAsync(int productId);

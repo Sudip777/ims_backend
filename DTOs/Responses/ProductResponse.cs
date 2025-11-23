@@ -20,7 +20,7 @@ namespace inventory_management_system.DTOs.Responses
         public int MinStock { get; set; } = 0;
         public int? MaxStock { get; set; }
         public bool IsActive { get; set; } = true;
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } 
         public int TotalCount { get; set; }
 
         public static ProductResponse MappeddProductResponse(Product product, int totalCount = 0)

@@ -1,8 +1,10 @@
-﻿using inventory_management_system.Data;
+﻿using Azure;
+using inventory_management_system.Data;
 using inventory_management_system.DTOs.Requests;
 using inventory_management_system.DTOs.Responses;
 using inventory_management_system.Repository.Interfaces;
 using inventory_management_system.Services.Interfaces;
+using static inventory_management_system.Constants.ApiRoutes;
 namespace inventory_management_system.Services.Implementations
 {
     public class ProductService : IProductService
@@ -108,7 +110,17 @@ namespace inventory_management_system.Services.Implementations
             return ProductResponse.MappeddProductResponse(updatedProduct);
         }
 
-          
+        public async Task<IEnumerable<ProductDropdownResponse>> GetAllProductLists()
+        {
+           var response = await _productRepository.GetAllProductLists();
+            if (response == null) throw new KeyNotFoundException("No Products Found.");
 
+            return response.Select(ps => new ProductDropdownResponse
+            {
+                ProductId = ps.ProductId,
+                Name = ps.Name!,
+            }).ToList();
+
+        }
     }
 }

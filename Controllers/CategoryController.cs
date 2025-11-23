@@ -127,8 +127,7 @@ namespace inventory_management_system.Controllers
                     User.Identity?.Name ?? "Anonymous"
                     );
 
-                return CreatedAtAction(
-                    nameof(GetCategoryById),   
+                return Ok(
                     new
                     {
                         message = "Category Created Successfully",
