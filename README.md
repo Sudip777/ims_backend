@@ -206,24 +206,13 @@ Edit `appsettings.json` or `appsettings.Development.json`:
 ```bash
 dotnet ef migrations add InitialCreate
 ```
-
 #### Step 2: Apply Migration to Database
 
 ```bash
 dotnet ef database update
 ```
 
-#### Step 3: Seed Initial Data (Optional)
-
-Create a database seeder or manually insert an admin user:
-
-```sql
-INSERT INTO Users (Email, PasswordHash, FirstName, LastName, Role, IsActive, CreatedAt)
-VALUES ('admin@ims.com', '[BCrypt_Hash]', 'Admin', 'User', 'SuperAdmin', 1, GETDATE());
-```
-
 ### Running the Application
-
 #### Development Mode
 
 ```bash
