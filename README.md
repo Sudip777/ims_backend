@@ -13,18 +13,6 @@ The **Inventory Management System (IMS)** is a production-ready, enterprise-grad
 - **Validation**: Robust input validation using FluentValidation
 - **Documentation**: Interactive API documentation with Scalar
 
-### Business Capabilities
-
-- Real-time inventory tracking
-- Low stock alerts and notifications
-- Purchase order management
-- Sales order processing
-- Supplier management
-- Multi-warehouse operations
-- User role management
-- Transaction audit logging
-
----
 
 ## Tech Stack
 
@@ -45,8 +33,6 @@ The **Inventory Management System (IMS)** is a production-ready, enterprise-grad
 | **Logging** | Serilog | Structured logging |
 | **Documentation** | Swagger/OpenAPI | API documentation |
 | **Documentation UI** | Scalar | Modern API documentation interface |
-| **Rate Limiting** | ASP.NET Core Rate Limiting | Request throttling |
-| **Caching** | IMemoryCache | In-memory caching |
 ---
 
 ## Project Structure
