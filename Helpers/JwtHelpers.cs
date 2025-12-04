@@ -26,7 +26,8 @@ namespace inventory_management_system.Helpers
             {
                 HttpOnly = true,
                 Secure = false, // Set to true in production for HTTPS
-                SameSite = SameSiteMode.Strict,
+                //SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None, // This is needed for testing refresh token
                 Expires = DateTime.UtcNow.AddMinutes(60)
             };
 
