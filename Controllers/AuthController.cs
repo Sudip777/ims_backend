@@ -62,7 +62,7 @@ namespace inventory_management_system.Controllers
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(120),
+                expires: DateTime.UtcNow.AddMinutes(60),
                 signingCredentials: signIn
             );
 
@@ -70,7 +70,7 @@ namespace inventory_management_system.Controllers
                _configuration["Jwt:Issuer"],
                _configuration["Jwt:Audience"],
                claims,
-               expires: DateTime.UtcNow.AddMinutes(240),
+               expires: DateTime.UtcNow.AddDays(1),
                signingCredentials: signIn
            );
 
@@ -177,7 +177,7 @@ namespace inventory_management_system.Controllers
         }
 
         [HttpPost(ApiRoutes.Auth.RefreshToken)]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
@@ -216,8 +216,14 @@ namespace inventory_management_system.Controllers
 
                 if (storedToken == null || storedToken.ExpiresAt <= DateTime.UtcNow)
                     return Unauthorized(new { Message = "Invalid or expired refresh token" });
+
                 // Remove the old refresh token
-                _context.Tokens.Remove(storedToken);
+                //_context.Tokens.Remove(storedToken);
+
+                storedToken.ExpiresAt = DateTime.UtcNow.AddMinutes(1); // grace period
+
+                _context.Tokens.Update(storedToken);
+                await _context.SaveChangesAsync();
 
                 //  new access token
                 var claims = JwtHelpers.CreateClaims(user, _configuration);
@@ -227,7 +233,7 @@ namespace inventory_management_system.Controllers
                     _configuration["Jwt:Issuer"],
                     _configuration["Jwt:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddMinutes(120),
+                    expires: DateTime.UtcNow.AddMinutes(1),
                     signingCredentials: signIn
                 );
 
@@ -235,7 +241,7 @@ namespace inventory_management_system.Controllers
                     _configuration["Jwt:Issuer"],
                     _configuration["Jwt:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddMinutes(240),
+                    expires: DateTime.UtcNow.AddDays(1),
                     signingCredentials: signIn
                 );
 
