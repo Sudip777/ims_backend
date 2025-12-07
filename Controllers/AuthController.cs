@@ -233,7 +233,7 @@ namespace inventory_management_system.Controllers
                     _configuration["Jwt:Issuer"],
                     _configuration["Jwt:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddMinutes(1),
+                    expires: DateTime.UtcNow.AddMinutes(15),
                     signingCredentials: signIn
                 );
 
@@ -241,7 +241,7 @@ namespace inventory_management_system.Controllers
                     _configuration["Jwt:Issuer"],
                     _configuration["Jwt:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddDays(1),
+                    expires: DateTime.UtcNow.AddDays(7),
                     signingCredentials: signIn
                 );
 

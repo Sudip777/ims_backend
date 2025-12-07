@@ -15,44 +15,33 @@ namespace inventory_management_system.Repository.Implementations
             _context = context;
         }
         public async Task<(IEnumerable<Inventory> inventories, int totalCount)> GetAllInventoriesAsync(
-                GetAllInventoriesRequest request)
+            GetAllInventoriesRequest request)
         {
-            var query = _context.Inventories
-                .Include(i => i.Product)
-                .Include(i => i.Warehouse)
-                .AsQueryable();
-
-            // Filtering
-            if (request.ProductId.HasValue)
-                query = query.Where(i => i.ProductId == request.ProductId.Value);
-
-            if (request.WarehouseId.HasValue)
-                query = query.Where(i => i.WarehouseId == request.WarehouseId.Value);
-
-            if (!string.IsNullOrEmpty(request.Search))
-    {
-        var searchTerm = request.Search.ToLower();
-            query = query.Where(i =>
-                EF.Functions.Like(i.Product.Name.ToLower(), $"%{searchTerm}%") ||
-                EF.Functions.Like(i.Warehouse.Name.ToLower(), $"%{searchTerm}%") ||
-                EF.Functions.Like(i.InventoryId.ToString(), $"%{searchTerm}%")
-            );
-    }
-
-            query = request.SortDirection == "asc" ? query.OrderByDynamic(request.SortColumn) : query.OrderByDescendingDynamic(request.SortColumn);
-
-            // Total count
-            var totalCount = await query.CountAsync();
-
-            // sorting and pagination
-            var inventories = await query
-    
-                .Skip((request.Page - 1) * request.PageSize)
-                .Take(request.PageSize)
+            var inventories = await _context.Set<Inventory>()
+                .FromSqlInterpolated($@"
+                EXEC dbo.GetAllInventoriesData
+                @ProductId = {request.ProductId},
+                @WarehouseId = {request.WarehouseId},
+                @Search = {request.Search},
+                @SortColumn = {request.SortColumn},
+                @SortDirection = {request.SortDirection},
+                @Page = {request.Page},
+                @PageSize = {request.PageSize}")
+                .AsNoTracking()
                 .ToListAsync();
+
+            var totalCount = await _context.Inventories
+                .AsQueryable()
+                .Where(i => (!request.ProductId.HasValue || i.ProductId == request.ProductId.Value)
+                            && (!request.WarehouseId.HasValue || i.WarehouseId == request.WarehouseId.Value)
+                            && (string.IsNullOrEmpty(request.Search)
+                                || i.Product.Name.Contains(request.Search)
+                                || i.Warehouse.Name.Contains(request.Search)))
+                .CountAsync();
 
             return (inventories, totalCount);
         }
+
 
         public async Task<Inventory?> GetInventoryByIdAsync(int id)
         {
