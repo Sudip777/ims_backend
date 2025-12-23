@@ -14,19 +14,31 @@ namespace inventory_management_system.Controllers
     [Route(ApiRoutes.Categories.Base)]
     [Authorize]
     [RolePermission]
+    /// <summary>
+    /// Controller for handling category-related operations including creating, retrieving, and managing categories.
+    /// </summary>
     public class CategoryController:ControllerBase
     {
         private readonly ICategoryService _categoryService;
         private readonly ILogger<CategoryController> _logger;
         private readonly IValidator<CategoryDto> _validator;
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CategoryController"/> class.
+        /// </summary>
+        /// <param name="categoryService">Service for category-related operations</param>
+        /// <param name="logger">Logger for logging operations</param>
+        /// <param name="validator">Validator for category data transfer objects</param>
         public CategoryController(ICategoryService categoryService, ILogger<CategoryController> logger, IValidator<CategoryDto> validator)
         {
            _categoryService = categoryService;
               _logger = logger;
             _validator = validator;
         }
+        /// <summary>
+        /// Retrieves all categories from the system.
+        /// </summary>
+        /// <returns>A list of all categories if successful, otherwise appropriate error response</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CategoryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,6 +75,11 @@ namespace inventory_management_system.Controllers
         }
 
 
+        /// <summary>
+        /// Retrieves a specific category by its ID.
+        /// </summary>
+        /// <param name="categoryId">The ID of the category to retrieve</param>
+        /// <returns>The requested category if found, otherwise appropriate error response</returns>
         [HttpGet(ApiRoutes.Categories.ById)]
         [ProducesResponseType(typeof(IEnumerable<CategoryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -100,6 +117,11 @@ namespace inventory_management_system.Controllers
         }
 
 
+        /// <summary>
+        /// Creates a new category in the system after validating the category data.
+        /// </summary>
+        /// <param name="categoryDto">Data transfer object containing category information</param>
+        /// <returns>Confirmation of successful creation or validation errors</returns>
         [HttpPost]
         [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

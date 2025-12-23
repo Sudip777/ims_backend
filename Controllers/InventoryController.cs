@@ -15,11 +15,21 @@ namespace inventory_management_system.Controllers
     [ApiController]
     [Authorize]
     [RolePermission]
+    /// <summary>
+    /// Controller for handling inventory-related operations including creating, retrieving, updating, and managing inventory items.
+    /// </summary>
     public class InventoryController: ControllerBase
     {
         private readonly IInventoryService _inventoryService;
         private readonly ILogger<InventoryController> _logger;
         private readonly IValidator<InventoryDto> _validator;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InventoryController"/> class.
+        /// </summary>
+        /// <param name="inventoryService">Service for inventory-related operations</param>
+        /// <param name="logger">Logger for logging operations</param>
+        /// <param name="validator">Validator for inventory data transfer objects</param>
         public InventoryController(IInventoryService inventoryService, ILogger<InventoryController> logger, IValidator<InventoryDto> validator)
         {
             _inventoryService = inventoryService;
@@ -28,6 +38,11 @@ namespace inventory_management_system.Controllers
         }
 
 
+        /// <summary>
+        /// Retrieves all inventories based on the provided request parameters.
+        /// </summary>
+        /// <param name="request">Request object containing query parameters for filtering and pagination</param>
+        /// <returns>A list of inventories if successful, otherwise appropriate error response</returns>
         [HttpGet]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -66,6 +81,11 @@ namespace inventory_management_system.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a specific inventory item by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the inventory item to retrieve</param>
+        /// <returns>The requested inventory item if found, otherwise appropriate error response</returns>
         [HttpGet(ApiRoutes.Inventory.ById)]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -98,6 +118,11 @@ namespace inventory_management_system.Controllers
         }
 
 
+        /// <summary>
+        /// Creates a new inventory item after validating the inventory data.
+        /// </summary>
+        /// <param name="dto">Data transfer object containing inventory information</param>
+        /// <returns>Confirmation of successful creation or validation errors</returns>
         [HttpPost]
         [ProducesResponseType(typeof(InventoryDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -137,6 +162,12 @@ namespace inventory_management_system.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an existing inventory item by its ID after validating the inventory data.
+        /// </summary>
+        /// <param name="dto">Data transfer object containing updated inventory information</param>
+        /// <param name="id">The ID of the inventory item to update</param>
+        /// <returns>Confirmation of successful update or validation errors</returns>
         [HttpPut(ApiRoutes.Inventory.ById)]
         [ProducesResponseType(typeof(InventoryDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -188,6 +219,10 @@ namespace inventory_management_system.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves inventory items that are low in stock.
+        /// </summary>
+        /// <returns>A list of low stock inventory items if successful, otherwise appropriate error response</returns>
         [HttpGet(ApiRoutes.Inventory.LowStock)]
         [ProducesResponseType(typeof(InventoryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -7,13 +7,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace inventory_management_system.Repository.Implementations
 {
+    /// <summary>
+    /// Implementation of the inventory repository interface providing methods for inventory data access operations.
+    /// </summary>
     public class InventoryRepository: IInventoryRepository
     {
         private readonly ApplicationDBContext _context;
 
-        public InventoryRepository(ApplicationDBContext context) { 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InventoryRepository"/> class.
+        /// </summary>
+        /// <param name="context">The database context to use for data access operations</param>
+        public InventoryRepository(ApplicationDBContext context) {
             _context = context;
         }
+        /// <summary>
+        /// Retrieves all inventory items based on the provided request parameters asynchronously.
+        /// </summary>
+        /// <param name="request">Request object containing query parameters for filtering and pagination</param>
+        /// <returns>A tuple containing a collection of inventories and the total count</returns>
         public async Task<(IEnumerable<Inventory> inventories, int totalCount)> GetAllInventoriesAsync(
             GetAllInventoriesRequest request)
         {

@@ -8,11 +8,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace inventory_management_system.Repository.Implementations
 {
+    /// <summary>
+    /// Implementation of the order repository interface providing methods for order data access operations.
+    /// </summary>
     public class OrderRepository : IOrderRepository
 
     {
         private readonly ApplicationDBContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrderRepository"/> class.
+        /// </summary>
+        /// <param name="context">The database context to use for data access operations</param>
         public OrderRepository(ApplicationDBContext context)
         {
             _context = context;

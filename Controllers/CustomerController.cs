@@ -16,12 +16,21 @@ namespace inventory_management_system.Controllers
     [ApiController]
     [Authorize]
     [RolePermission]
+    /// <summary>
+    /// Controller for handling customer-related operations including creating, retrieving, updating, and deleting customers.
+    /// </summary>
     public class CustomerController:ControllerBase
     {
         private readonly ILogger<CustomerController> _logger;
         private readonly ICustomerService _customerService;
         private readonly IValidator<CustomerDto> _validator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomerController"/> class.
+        /// </summary>
+        /// <param name="customerService">Service for customer-related operations</param>
+        /// <param name="logger">Logger for logging operations</param>
+        /// <param name="validator">Validator for customer data transfer objects</param>
         public CustomerController(ICustomerService customerService, ILogger<CustomerController> logger, IValidator<CustomerDto> validator)
         {
             _logger = logger;
@@ -30,6 +39,10 @@ namespace inventory_management_system.Controllers
         }
 
 
+        /// <summary>
+        /// Retrieves all customers from the system.
+        /// </summary>
+        /// <returns>A list of all customers if successful, otherwise appropriate error response</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CustomerResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -60,6 +73,11 @@ namespace inventory_management_system.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a specific customer by their ID.
+        /// </summary>
+        /// <param name="id">The ID of the customer to retrieve</param>
+        /// <returns>The requested customer if found, otherwise appropriate error response</returns>
         [HttpGet(ApiRoutes.Customers.ById)]
         [ProducesResponseType(typeof(CustomerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -92,6 +110,11 @@ namespace inventory_management_system.Controllers
         }
 
 
+        /// <summary>
+        /// Creates a new customer in the system after validating the customer data.
+        /// </summary>
+        /// <param name="customerDto">Data transfer object containing customer information</param>
+        /// <returns>Confirmation of successful creation or validation errors</returns>
         [HttpPost]
         [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -138,6 +161,12 @@ namespace inventory_management_system.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an existing customer's information by their ID after validating the customer data.
+        /// </summary>
+        /// <param name="id">The ID of the customer to update</param>
+        /// <param name="customerDto">Data transfer object containing updated customer information</param>
+        /// <returns>Confirmation of successful update or validation errors</returns>
         [HttpPut(ApiRoutes.Customers.ById)]
         [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -184,6 +213,11 @@ namespace inventory_management_system.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes a customer by their ID.
+        /// </summary>
+        /// <param name="id">The ID of the customer to delete</param>
+        /// <returns>No content if successful, or appropriate error response</returns>
         [HttpDelete(ApiRoutes.Customers.ById)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

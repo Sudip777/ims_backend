@@ -22,6 +22,9 @@ namespace inventory_management_system.Controllers
 {
     [Route(ApiRoutes.Auth.Base)]
     [ApiController]
+    /// <summary>
+    /// Controller for handling authentication-related operations including login, registration, and token management.
+    /// </summary>
     public class AccountController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
@@ -29,6 +32,15 @@ namespace inventory_management_system.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly IUserService _userService;
         private readonly IValidator<RegisterUserDto> _validator;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccountController"/> class.
+        /// </summary>
+        /// <param name="validator">Validator for register user data transfer objects</param>
+        /// <param name="context">Database context for data access</param>
+        /// <param name="configuration">Application configuration</param>
+        /// <param name="logger">Logger for logging operations</param>
+        /// <param name="userService">Service for user-related operations</param>
         public AccountController(
         IValidator<RegisterUserDto> validator,
         ApplicationDBContext context,
@@ -43,6 +55,11 @@ namespace inventory_management_system.Controllers
             _userService = userService;
         }
 
+        /// <summary>
+        /// Authenticates a user and generates JWT access and refresh tokens.
+        /// </summary>
+        /// <param name="loginDTO">Login data transfer object containing username and password</param>
+        /// <returns>JWT tokens if authentication is successful, otherwise unauthorized</returns>
         [HttpPost(ApiRoutes.Auth.Login)]
         [EnableRateLimiting("LoginLimiter")]
         [AllowAnonymous]
@@ -104,6 +121,11 @@ namespace inventory_management_system.Controllers
 
         }
 
+        /// <summary>
+        /// Registers a new user in the system after validating the registration data.
+        /// </summary>
+        /// <param name="dto">Registration data transfer object containing user information</param>
+        /// <returns>Confirmation of successful registration or validation errors</returns>
         [HttpPost(ApiRoutes.Auth.Register)]
         [Authorize]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
@@ -144,6 +166,11 @@ namespace inventory_management_system.Controllers
 
 
 
+        /// <summary>
+        /// Retrieves the currently authenticated user's information.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation</param>
+        /// <returns>The current user's information if authenticated, otherwise unauthorized</returns>
         [HttpGet(ApiRoutes.User.Base)]
         [Authorize]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
@@ -176,6 +203,10 @@ namespace inventory_management_system.Controllers
             });
         }
 
+        /// <summary>
+        /// Refreshes the access token using a valid refresh token stored in cookies.
+        /// </summary>
+        /// <returns>New JWT tokens if refresh is successful, otherwise appropriate error response</returns>
         [HttpPost(ApiRoutes.Auth.RefreshToken)]
         [AllowAnonymous]
         public async Task<IActionResult> RefreshToken()
@@ -299,6 +330,11 @@ namespace inventory_management_system.Controllers
         }
 
 
+        /// <summary>
+        /// Deletes a user by their ID. Only accessible to SUPER_ADMIN users.
+        /// </summary>
+        /// <param name="id">The ID of the user to delete</param>
+        /// <returns>No content if successful, or appropriate error response</returns>
         [HttpDelete("{id}")]
         [Authorize(Roles = "SUPER_ADMIN")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -338,6 +374,12 @@ namespace inventory_management_system.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates a user's information by their ID.
+        /// </summary>
+        /// <param name="id">The ID of the user to update</param>
+        /// <param name="userDto">Data transfer object containing updated user information</param>
+        /// <returns>No content if successful, or appropriate error response</returns>
         [HttpPut("{id}")]
         //[Authorize(Roles = "Admin")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
